@@ -1,1 +1,3 @@
-print("hello world")
+return {
+    print("hello world")
+}
