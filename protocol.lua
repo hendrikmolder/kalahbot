@@ -3,6 +3,8 @@ local Message = require 'Message'
 -- Parse message
 -- Input:   Direct input from the server/game engine
 -- Output:  Message object (?)
+
+-- NB! Not finished and not working
 function parseMessage(msg)
     message = Message:new()
     local messageType = getMessageType(msg)
