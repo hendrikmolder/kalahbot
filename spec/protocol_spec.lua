@@ -1,8 +1,7 @@
---
--- Created by IntelliJ IDEA.
--- User: Hendrik
--- Date: 26/10/2018
--- Time: 20:30
--- To change this template use File | Settings | File Templates.
---
+local protocol = require 'protocol'
 
+describe('getMessageType', function()
+    it('Returns START MESSAGE if message starts with START;', function()
+        assert.equals(protocol.getMessageType("START;asdasdasd", "START MESSAGE"))
+    end)
+end)

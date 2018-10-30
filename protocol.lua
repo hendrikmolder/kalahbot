@@ -1,12 +1,15 @@
---
--- Created by IntelliJ IDEA.
--- User: Hendrik
--- Date: 26/10/2018
--- Time: 10:50
--- To change this template use File | Settings | File Templates.
---
-local function parseMessage(message)
-    return getMessageType(message)
+local Message = require 'Message'
+
+-- Parse message
+-- Input:   Direct input from the server/game engine
+-- Output:  Message object (?)
+function parseMessage(msg)
+    message = Message:new()
+    local messageType = getMessageType(msg)
+
+    message.type = messageType
+
+    return message
 end
 
 function getMessageType(message)
@@ -30,6 +33,7 @@ function getMessageType(message)
     return nil
 end
 
+-- The below content is for testing purposes only. WILL BE REMOVED!
 while true do
     local line = io.read()
 
