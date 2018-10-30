@@ -5,6 +5,8 @@
 -- Time: 11:01
 -- To change this template use File | Settings | File Templates.
 --
+local protocol = require 'protocol'
+
 
 Main = {}
 
@@ -33,11 +35,13 @@ end
 -- TODO Change function calls based on game messages perhaps
 function Main:gameLoop()
     while true do
-        Main:readMsg()
+        protocol.parseMessage(Main:readMsg())
     end
 end
 
+-- Create new game
 game = Main
 
+-- Start game
 game:gameLoop()
 
