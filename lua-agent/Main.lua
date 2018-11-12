@@ -37,7 +37,9 @@ function Main:gameLoop()
     end
 end
 
+-- Create new game
 game = Main
 
+-- Start game
 game:gameLoop()
 
