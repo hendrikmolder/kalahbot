@@ -1,4 +1,3 @@
-local Message = require 'Message'
 
 -- Parse message
 -- Input:   Direct input from the server/game engine
@@ -6,12 +5,12 @@ local Message = require 'Message'
 
 -- NB! Not finished and not working
 function parseMessage(msg)
-    message = Message:new()
+    local message = Message:new()
     local messageType = getMessageType(msg)
 
     message.type = messageType
 
-    return message
+    return message.type
 end
 
 function getMessageType(message)
@@ -37,7 +36,7 @@ end
 
 -- The below content is for testing purposes only. WILL BE REMOVED!
 while true do
-    local line = io.read()
+    local line = "START;" --io.read()
 
     -- If there's no new line, exit
     if line == nil then break end
