@@ -1,4 +1,6 @@
-function getMessageType(message)
+local protocol = {}
+
+function protocol.getMessageType(message)
     local startMsg = "START;"
     local changeMsg = "CHANGE;"
     local endMsg = "END\n"
@@ -25,3 +27,5 @@ end
 function getMessageBody(message, msgType)
     local stripType = message:sub()
 end
+
+return protocol

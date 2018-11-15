@@ -1,7 +1,20 @@
-local protocol = require '../protocol'
+protocol = require 'protocol'
+
+-- Define strings for testing
+startStr    = "START;asdasd"
+changeStr   = "CHANGE;asdasd"
+endStr      = "END\n"
 
 describe('getMessageType', function()
-    it('Returns START MESSAGE if message starts with START;', function()
-        assert.equals(protocol.getMessageType("START;asdasdasd", "start"))
+    it('returns \"start\" if message starts with START;', function()
+        assert.equals(protocol.getMessageType(startStr), "start")
+    end)
+
+    it('returns \"end\" if message starts with END', function()
+        assert.equals(protocol.getMessageType(endStr), "end")
+    end)
+
+    it('returns \"change\" if message starts with CHANGE;', function()
+        assert.equals(protocol.getMessageType(changeStr), "change")
     end)
 end)
