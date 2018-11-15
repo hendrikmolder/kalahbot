@@ -1,5 +1,6 @@
 local protocol = {}
 
+-- Returns message type (start, change, or end)
 function protocol.getMessageType(message)
     local startMsg = "START;"
     local changeMsg = "CHANGE;"
@@ -24,8 +25,13 @@ function protocol.getMessageType(message)
     return nil
 end
 
-function getMessageBody(message, msgType)
+function protocol.getMessageBody(message, msgType)
     local stripType = message:sub()
+end
+
+-- Returns move message
+function protocol.createMoveMsg(hole)
+    return "MOVE;" .. hole .. "\n"
 end
 
 return protocol
