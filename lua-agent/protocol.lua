@@ -30,4 +30,27 @@ function protocol.createMoveMsg(hole)
     return "MOVE;" .. hole .. "\n"
 end
 
+-- Returns swap message
+function protocol.createSwapMsg()
+    return "SWAP\n"
+end
+
+-- Evaluates start message and decides who's turn it is
+-- Should be called when getMessageType returns START
+function protocol.evaluateStartMsg(message)
+    -- Check if the message has a valid ending character
+    if message:sub(#message, #message) ~= "\n" then return nil end
+
+    -- Indexing starts at 1, hence we use 7 not 6
+    local position = message:sub(7, #message - 1)
+    if position == "South" then
+        return true
+    elseif position == "North" then
+        return false
+    else
+        print("Illegal position paramter: " .. position)
+        return nil
+    end
+end
+
 return protocol
