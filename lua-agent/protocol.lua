@@ -25,10 +25,6 @@ function protocol.getMessageType(message)
     return nil
 end
 
-function protocol.getMessageBody(message, msgType)
-    local stripType = message:sub()
-end
-
 -- Returns move message
 function protocol.createMoveMsg(hole)
     return "MOVE;" .. hole .. "\n"

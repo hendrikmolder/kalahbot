@@ -1,5 +1,5 @@
 package = "kalahbot"
-version = "1.0-1"
+version = "1.0-2"
 source = {
    url = "https://github.com/hendrikmolder/kalahbot"
 }
@@ -10,14 +10,11 @@ description = {
    license = "*** please specify a license ***"
 }
 dependencies = {
-    "lua >= 5.1, <= 5.4",
-    "busted",
-    "penlight"
+   "lua >= 5.1, < 5.4", "busted", "penlight"
 }
 build = {
    type = "builtin",
    modules = {
-      Main = "Main.lua",
       protocol = "protocol.lua",
       ['spec.protocol_spec'] = "spec/protocol_spec.lua"
    }

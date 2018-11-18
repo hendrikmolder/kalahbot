@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/hendrikmolder/kalahbot.svg?token=Mof5Gq1xr932bpnQpwj3&branch=master)](https://travis-ci.com/hendrikmolder/kalahbot)
+
 # kalahbot
 COMP34120 Project 1
 
