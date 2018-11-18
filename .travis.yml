@@ -20,7 +20,7 @@ install:
 
 script:
   # If there's 100 or less *warnings* it's probably ok? lol
-  - luacheck --std max+busted *.lua --exclude-files *_spec.lua -l 100
+  - luacheck --std max+busted *.lua --exclude-files *_spec.lua -g -d -t -q
   - busted --verbose --coverage
 
 after_success:
