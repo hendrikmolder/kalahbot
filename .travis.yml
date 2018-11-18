@@ -15,11 +15,11 @@ before_install:
 install:
   - luarocks install luacheck
   - luarocks install busted
-  # - luarocks install luacov
-  # - luarocks install luacov-coveralls
+  - luarocks install luacov
+  - luarocks install luacov-coveralls
 
 script:
-  - luacheck --std max+busted *.lua spec
+  - luacheck --std max+busted *.lua --exclude-files *_spec.lua
   - busted --verbose --coverage
 
 after_success:
