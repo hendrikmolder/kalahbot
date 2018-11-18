@@ -15,7 +15,11 @@ describe('getMessageType', function()
     end)
 
     it('returns \"change\" if message starts with CHANGE;', function()
-        assert.equals(protocol.getMessageType(changeStr), "change")
+        assert.equals(protocol.getMessageType(changeStr), "state")
+    end)
+
+    it('returns nil if message is not recognized', function()
+        assert.Nil(protocol.getMessageType("1337b00bs"))
     end)
 end)
 
