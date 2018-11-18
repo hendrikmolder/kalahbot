@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/hendrikmolder/kalahbot.svg?token=Mof5Gq1xr932bpnQpwj3&branch=master)](https://travis-ci.com/hendrikmolder/kalahbot)
+
 # kalahbot
 COMP34120 Project 1
 
@@ -14,7 +16,7 @@ COMP34120 Project 1
 ## Deadlines:
 
 
-- [ ] 14/10/2018 
+- [ ] 14/10/2018
     - Get template code for game playing agent setup locally.
     - Finish reading MCTS [1] paper for Kalah.
 - [ ] 1/11/2018
