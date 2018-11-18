@@ -15,7 +15,7 @@ function protocol.getMessageType(message)
     if message:sub(1, #startMsg) == startMsg then return "start" end
 
     -- CHANGE MESSAGE
-    if message:sub(1, #changeMsg) == changeMsg then return "change" end
+    if message:sub(1, #changeMsg) == changeMsg then return "state" end
 
     -- -- END MESSAGE
     if message:sub(1, #endMsg) == endMsg then return endString end

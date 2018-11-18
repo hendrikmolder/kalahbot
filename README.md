@@ -13,12 +13,12 @@ COMP34120 Project 1
 
 ## Deadlines:
 
--[ ] 14/10/2018
+- [ ] 14/10/2018
     - Get template code for game playing agent setup locally.
     - Finish reading MCTS [1] paper for Kalah.
--[ ] 1/11/2018
+- [ ] 1/11/2018
     - Finish MCTS implementation.
--[ ] 13/12/2018
+- [ ] 13/12/2018
     - Final project submission.
 
 ## Running & Developing
