@@ -1,7 +1,7 @@
 package = "kalahbot"
 version = "1.0-1"
 source = {
-   url = "*** please add URL for source tarball, zip or repository here ***"
+   url = "https://github.com/hendrikmolder/kalahbot"
 }
 description = {
    summary = "*** please specify description summary ***",
