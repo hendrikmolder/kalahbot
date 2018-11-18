@@ -5,6 +5,9 @@ startStr    = "START;asdasd"
 changeStr   = "CHANGE;asdasd"
 endStr      = "END\n"
 
+startSouth  = "START;South\n"
+startNorth  = "START;North\n"
+
 describe('getMessageType', function()
     it('returns \"start\" if message starts with START;', function()
         assert.equals(protocol.getMessageType(startStr), "start")
