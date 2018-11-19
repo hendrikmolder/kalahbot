@@ -28,13 +28,13 @@ end)
 
 describe('createMoveMsg', function ()
     it('returns a valid move message', function()
-        assert.equals(protocol.createMoveMsg(123), "MOVE;123\n")
+        assert.are.equal(protocol.createMoveMsg(123), "MOVE;123\n")
     end)
 end)
 
 describe('createSwapMsg', function()
     it('returns a valid swap message', function()
-        assert.equals(protocol.createSwapMsg(), "SWAP\n")
+        assert.are.equal(protocol.createSwapMsg(), "SWAP\n")
     end)
 end)
 
@@ -53,6 +53,12 @@ describe('evaluateStartMsg', function()
 
     it('returns false if the position is North', function()
         assert.False(protocol.evaluateStartMsg(startNorth))
+    end)
+end)
+
+describe('evaluateStateMsg', function()
+    it('returns nil if the message doesnt end correctly', function()
+        assert.Nil(protocol.evaluateStateMsg("START;asdasd;asd", nil))
     end)
 end)
 
