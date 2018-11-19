@@ -44,4 +44,18 @@ function Board:createBoard(holes, seeds)
     return o
 end
 
+-- Method to deep copy board for agent manipulation
+-- Taken from https://gist.github.com/tylerneylon/81333721109155b2d244#file-copy-lua-L50
+function Board:copyBoard()
+    if type(self) ~= 'table' then return self end
+    -- Set the meta table for lookups to be the same as the copied object
+    local res = setmetatable({}, getmetatable(self))
+    -- Copy table elements to the agent's copy
+    for k,v in pairs(self) do res[copyBoard(k)] = copyBoard(v) end
+    return res
+
+end
+
+
+
 return Board
