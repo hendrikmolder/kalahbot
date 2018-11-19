@@ -1,3 +1,5 @@
+local pl = require 'pl.stringx'
+
 local protocol = {}
 
 -- Returns message type (start, change, or end)
@@ -10,14 +12,8 @@ function protocol.getMessageType(message)
     local endString = "end"
 
     if message == nil then return nil end
-
-    -- START MESSAGE
     if message:sub(1, #startMsg) == startMsg then return "start" end
-
-    -- CHANGE MESSAGE
     if message:sub(1, #changeMsg) == changeMsg then return "state" end
-
-    -- -- END MESSAGE
     if message:sub(1, #endMsg) == endMsg then return endString end
 
     -- Message was not recognized
@@ -51,6 +47,19 @@ function protocol.evaluateStartMsg(message)
         print("Illegal position paramter: " .. position)
         return nil
     end
+end
+
+function protocol.evaluateStateMsg(message, board)
+    -- Check if message has a valid ending character
+    if message:sub(#message, #message) ~= "\n" then return nil end
+
+    local move = nil
+    local msgParts = pl.split(message, ";", 4)
+
+    -- If message does not have 4 parts, it is missing arguments
+    if #msgParts ~= 4 then return nil end
+
+    return true
 end
 
 return protocol
