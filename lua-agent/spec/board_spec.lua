@@ -13,6 +13,7 @@ southSideString = "SOUTH"
 
 
 testBoard = board:createBoard(7,7)
+agentTestBoard = testBoard:copyBoard()
 
 -- This shouldn't effect execution since the object is instantiated.
 board = nil
@@ -43,6 +44,24 @@ describe('createBoard', function()
 
     it('should allow access to a well on the south side', function()
         assert.equals(testBoard.board[2][7], 7)
+    end)
+end)
+
+describe('copyBoard', function()
+    it('should create a copied board with 7 seeds', function()
+        assert.equals(agentTestBoard.seeds, 7)
+    end)
+
+    it('should create a copied board with 7 holes', function()
+        assert.equals(agentTestBoard.holes, 7)
+    end)
+
+    it('should allow access to a copied well on north side', function()
+        assert.equals(agentTestBoard.board[1][2], 7)
+    end)
+
+    it('should allow access to a copied well on the south side', function()
+        assert.equals(agentTestBoard.board[2][7], 7)
     end)
 end)
 
