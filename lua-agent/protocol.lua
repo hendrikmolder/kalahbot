@@ -53,13 +53,58 @@ function protocol.evaluateStateMsg(message, board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
-    local move = nil
+    local moveTurn = MoveTurn:new(nil)
     local msgParts = pl.split(message, ";", 4)
 
     -- If message does not have 4 parts, it is missing arguments
     if #msgParts ~= 4 then return nil end
 
-    return true
+    -- msgParts[1] is "CHANGE"
+    -- msgParts[2] is the move (SWAP)
+    -- msgParts[3] is the board
+    -- msgParts[4] says who's turn it is
+    if msgParts[2] == "SWAP" then
+        moveTurn.move = -1
+    else
+        moveTurn.move = msgParts[2]
+    end
+
+    -- msgparts[3] -- the board
+    local board = Board:new(board)
+    local boardParts = pl.split(msgParts[3], ",")
+
+    if 2 * board.getNoOfHoles() + 1 ~= #boardParts then
+        print("Board error: expected " .. #board.getNoOfHoles() .. " but received " .. #boardParts)
+        return nil
+    end
+
+    for hole in board.getNoOfHoles() do
+        -- North holes
+        board.setSeeds("NORTH", hole+1, boardParts[hole])
+        -- South holes
+        board.setSeeds("SOUTH", hole+1, boardParts[hole + board.getNoOfHoles() + 1])
+    end
+
+    -- North store
+    board.setSeedsInStore("NORTH", boardParts[board.getNoOfHoles()])
+    -- South store
+    board.setSeedsInStore("SOUTH", boardParts[2 * board.getNoOfHoles + 1])
+
+    -- msgParts[4] -- who's turn
+    moveTurn.endMove = false
+    if msgParts[4] == "YOU\n" then
+        moveTurn.again = true
+    elseif msgParts[4] == "OPP\n" then
+        moveTurn.again = false
+    elseif msgParts[4] == "END\n" then
+        moveTurn.endMove = true
+        moveTurn.again = false
+    else
+        print("Illegal value for turn parameter " .. msgParts[4])
+        return nil
+    end
+
+    return moveTurn
 end
 
 return protocol
