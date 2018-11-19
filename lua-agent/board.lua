@@ -9,7 +9,7 @@
 -- Create a board object with default values
 -- board variable is instantiated as a table / matrix,
 -- we shall add the rows later
-Board = {NORTH_ROW = 0, SOUTH_ROW = 1, holes=1, seeds=0}
+Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0}
 
 Board.__index = Board
 
@@ -23,9 +23,9 @@ function Board:indexOfSide(side)
 end
 
 -- Board can be created with or without specifying any of the parameters
-function Board:createBoard(o, holes, seeds)
+function Board:createBoard(holes, seeds)
 
-    o = o or {}
+    local o = {}
     setmetatable(o, self)
     self.__index = self
     self.holes = holes or 1
@@ -40,5 +40,8 @@ function Board:createBoard(o, holes, seeds)
         end
 
     end
+
+    return o
 end
 
+return Board
