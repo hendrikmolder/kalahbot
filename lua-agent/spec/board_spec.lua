@@ -15,9 +15,6 @@ southSideString = "SOUTH"
 testBoard = board:new(7,7)
 agentTestBoard = testBoard:copyBoard(testBoard)
 
--- This shouldn't effect execution since the object is instantiated.
-board = nil
-
 describe('indexOfSide', function()
     it('returns 1 if the side is north', function()
         assert.equals(testBoard:indexOfSide(northSideString), 1)
