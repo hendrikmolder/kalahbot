@@ -16,6 +16,8 @@ build = {
    type = "builtin",
    modules = {
       protocol = "protocol.lua",
-      ['spec.protocol_spec'] = "spec/protocol_spec.lua"
+      ['spec.protocol_spec'] = "spec/protocol_spec.lua",
+      board = "board.lua",
+      ['spec.board_spec'] = "spec/board_spec.lua"
    }
 }
