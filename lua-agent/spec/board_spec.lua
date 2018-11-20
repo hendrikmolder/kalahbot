@@ -77,6 +77,90 @@ describe('getSeeds', function()
     end)
 end)
 
+describe('setSeeds', function()
+    it('sets the seeds on a specified side and hole', function()
+        testBoard:setSeeds(northSideString, 4, 3)
+        assert.equals(testBoard:getSeeds(northSideString, 4), 3)
+    end)
+end)
+
+describe('addSeeds', function ()
+    it('adds the number of seeds in a given well', function()
+        testBoard:addSeeds(southSideString, 5, 4)
+        assert.equals(testBoard:getSeeds(southSideString, 5), 11)
+    end)
+end)
+
+describe('getSeedsOp', function()
+    it('returns the seeds opposite to a north well', function()
+        assert.equals(testBoard:getSeedsOp(northSideString, 1), 7)
+    end)
+
+    it('returns the seeds opposite to a south well', function()
+        testBoard:setSeeds(northSideString, 3, 1)
+        assert.equals(testBoard:getSeedsOp(southSideString, 5), 1)
+    end)
+end)
+
+describe('setSeedsOp', function()
+    it('sets the seeds in the opposite (south) well', function()
+        testBoard:setSeedsOp(northSideString, 3, 1)
+        assert.equals(testBoard:getSeedsOp(northSideString, 3), 1)
+    end)
+
+    it('sets the seeds in the opposite (north) well', function()
+        testBoard:setSeedsOp(southSideString, 2, 1)
+        assert.equals(testBoard:getSeedsOp(southSideString, 2), 1)
+    end)
+end)
+
+describe('addSeedsOp', function()
+    it('adds seeds to the opposite (north) well', function ()
+        testBoard:addSeedsOp(northSideString, 3, 2)
+        assert.equals(testBoard:getSeedsOp(northSideString, 3), 3)
+    end)
+
+    it('adds seeds to the opposite (south) well', function ()
+        testBoard:addSeedsOp(southSideString, 2, 2)
+        assert.equals(testBoard:getSeedsOp(southSideString, 2), 3)
+    end)
+
+end)
+
+describe('getSeedsInStore', function()
+    it('returns the seeds in the north scoring well', function ()
+        assert.equals(testBoard:getSeedsInStore(northSideString), 0)
+    end)
+
+    it('returns the seeds in the south scoring well', function ()
+        assert.equals(testBoard:getSeedsInStore(northSideString), 0)
+    end)
+
+end)
+
+describe('setSeedsInStore', function()
+    it('sets the seeds in the north scoring well', function ()
+        testBoard:setSeedsInStore(northSideString, 11)
+        assert.equals(testBoard:getSeedsInStore(northSideString), 11)
+    end)
+
+    it('sets the seeds in the south scoring well', function ()
+        testBoard:setSeedsInStore(southSideString, 11)
+        assert.equals(testBoard:getSeedsInStore(northSideString), 11)
+    end)
+end)
+
+describe('addSeedsToStore', function()
+    it('adds seeds to the north scoring well', function ()
+        testBoard:addSeedsToStore(northSideString, 2)
+        assert.equals(testBoard:getSeedsInStore(northSideString), 13)
+    end)
+
+    it('adds seeds to the south scoring well', function ()
+        testBoard:addSeedsToStore(southSideString, 2)
+        assert.equals(testBoard:getSeedsInStore(southSideString), 13)
+    end)
+end)
 
 
 
