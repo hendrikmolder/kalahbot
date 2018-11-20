@@ -67,7 +67,7 @@ end)
 
 describe('getNoOfHoles', function()
     it('returns number of holes per side', function()
-        assert.equals(testBoard.getNoOfHoles(), 7)
+        assert.equals(testBoard:getNoOfHoles(), 7)
     end)
 end)
 
