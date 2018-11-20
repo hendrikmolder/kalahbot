@@ -23,7 +23,7 @@ function Board:indexOfSide(side)
 end
 
 -- Board can be created with or without specifying any of the parameters
-function Board:createBoard(holes, seeds)
+function Board:new(holes, seeds)
 
     local o = {}
     setmetatable(o, self)

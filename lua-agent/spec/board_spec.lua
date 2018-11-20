@@ -12,7 +12,7 @@ northSideString = "NORTH"
 southSideString = "SOUTH"
 
 
-testBoard = board:createBoard(7,7)
+testBoard = board:new(7,7)
 agentTestBoard = testBoard:copyBoard(testBoard)
 
 -- This shouldn't effect execution since the object is instantiated.
