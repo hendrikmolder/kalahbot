@@ -57,11 +57,11 @@ function Board:copyBoard(obj)
 end
 
 function Board:getNoOfHoles()
-    return holes
+    return self.holes
 end
 
 function Board:getSeeds(side, hole)
-    return board[self.indexOfSide(side)][hole]
+    return self.board[self:indexOfSide(side)][hole]
 end
 
 return Board
