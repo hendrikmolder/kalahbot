@@ -32,11 +32,14 @@ function Board:createBoard(holes, seeds)
     self.seeds = seeds or 0
     self.board = {}
     for side=1,2 do
-        -- Create Player Well
+        -- Create Player Wells
         self.board[side] = {}
-        for well=1,holes do
+        for well=1,holes+1 do
             -- Add seed to player well
-            self.board[side][well] = seeds
+            if well <= self.holes then self.board[side][well] = seeds
+            -- Handle scoring well
+            else self.board[side][well] = 0 end
+
         end
 
     end
@@ -62,6 +65,42 @@ end
 
 function Board:getSeeds(side, hole)
     return self.board[self:indexOfSide(side)][hole]
+end
+
+function Board:setSeeds(side, hole, seeds)
+    self.board[self:indexOfSide(side)][hole] = seeds
+end
+
+function Board:addSeeds(side, hole, seeds)
+    self.board[self:indexOfSide(side)][hole] = self:getSeeds(side, hole) + seeds
+end
+
+function Board:getSeedsOp(side, hole)
+    if (side == "NORTH") then return self.board[2][self.holes+1-hole]
+    else return self.board[1][self.holes+1-hole] end
+end
+
+function Board:setSeedsOp(side, hole, seeds)
+    if (side == "NORTH") then self.board[2][self.holes+1-hole] = seeds
+    else self.board[1][self.holes+1-hole] = seeds end
+end
+
+-- TODO this function's logic seems a bit dodgy to me, hopefully tests catch it if it is
+function Board:addSeedsOp(side, hole, seeds)
+    if (side == "NORTH") then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
+    else self.board[1][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds end
+end
+
+function Board:getSeedsInStore(side)
+    return self.board[self:indexOfSide(side)][8]
+end
+
+function Board:setSeedsInStore(side, seeds)
+    self.board[self:indexOfSide(side)][8] = seeds
+end
+
+function Board:addSeedsToStore(side, seeds)
+    self.board[self:indexOfSide(side)][8] = self:getSeeds(side, 8) + seeds
 end
 
 return Board
