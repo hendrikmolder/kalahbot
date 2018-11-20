@@ -103,4 +103,16 @@ function Board:addSeedsToStore(side, seeds)
     self.board[self:indexOfSide(side)][8] = self:getSeeds(side, 8) + seeds
 end
 
+function Board:toString()
+    -- Loop over row
+    for k,v in pairs(self.board) do
+        for wells, _ in pairs(v) do
+            io.write(self.board[k][wells] .. " | ")
+            if (k == 1 and  wells == 8) then
+                io.write("\n")
+            end
+        end
+    end
+end
+
 return Board
