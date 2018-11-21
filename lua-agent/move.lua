@@ -21,3 +21,5 @@ end
 function Move:getHole ()
     return self.hole
 end
+
+return Move
