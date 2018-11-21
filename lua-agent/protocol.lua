@@ -51,7 +51,7 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
-function protocol.evaluateStateMsg(message, boardArg)
+function protocol.evaluateStateMsg(message, board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -72,7 +72,6 @@ function protocol.evaluateStateMsg(message, boardArg)
     end
 
     -- msgparts[3] -- the board
-    -- local board = Board:new(boardArg)
     local boardParts = pl.split(msgParts[3], ",")
 
     if 2 * board:getNoOfHoles() + 1 ~= #boardParts then
