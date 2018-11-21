@@ -1,4 +1,6 @@
 local pl = require 'pl.stringx'
+MoveTurn = require 'moveTurn'
+Board = require 'board'
 
 local protocol = {}
 
@@ -49,7 +51,7 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
-function protocol.evaluateStateMsg(message, boardArg)
+function protocol.evaluateStateMsg(message, board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -70,25 +72,25 @@ function protocol.evaluateStateMsg(message, boardArg)
     end
 
     -- msgparts[3] -- the board
-    local board = Board:new(boardArg)
+    -- local board = Board:new(boardArg)
     local boardParts = pl.split(msgParts[3], ",")
 
-    if 2 * board.getNoOfHoles() + 1 ~= #boardParts then
-        print("Board error: expected " .. #board.getNoOfHoles() .. " but received " .. #boardParts)
+    if 2 * board:getNoOfHoles() + 1 ~= #boardParts then
+        print("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
         return nil
     end
 
-    for hole in board.getNoOfHoles() do
+    for hole=1,board:getNoOfHoles() do
         -- North holes
-        board.setSeeds("NORTH", hole+1, boardParts[hole])
+        board:setSeeds("NORTH", hole+1, boardParts[hole])
         -- South holes
-        board.setSeeds("SOUTH", hole+1, boardParts[hole + board.getNoOfHoles() + 1])
+        board:setSeeds("SOUTH", hole+1, boardParts[hole + board:getNoOfHoles() + 1])
     end
 
     -- North store
-    board.setSeedsInStore("NORTH", boardParts[board.getNoOfHoles()])
+    board:setSeedsInStore("NORTH", boardParts[board:getNoOfHoles()])
     -- South store
-    board.setSeedsInStore("SOUTH", boardParts[2 * board.getNoOfHoles + 1])
+    board:setSeedsInStore("SOUTH", boardParts[2 * board:getNoOfHoles() + 1])
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
