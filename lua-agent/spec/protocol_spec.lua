@@ -68,9 +68,10 @@ describe('evaluateStateMsg', function()
     local boardParts15 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"
     local correctMsg14 = "CHANGE;SWAP;" .. boardParts14 .. ";YOU\n"
     local correctMsg15 = "CHANGE;SWAP;" .. boardParts15 .. ";YOU\n"
+    local correctMsg = "CHANGE;SWAP;" .. boardParts15 .. ";"
 
     -- Mock the board
-    local mockBoard = mock(board:new(7,7))
+    local mockBoard = board:new(7,7)
 
     it('returns nil if the message doesnt end correctly', function()
         assert.Nil(protocol.evaluateStateMsg(incorrectEnd, nil))
@@ -85,7 +86,7 @@ describe('evaluateStateMsg', function()
         assert.Nil(protocol.evaluateStateMsg(correctMsg14, mockBoard))
     end)
 
-    it('returns a move turn if everything is OK', function()
+    it('returns a mt if everything is OK and its your turn', function()
         mt = moveTurn:new(nil)
         mt.move = -1
         mt.endMove = false
@@ -93,5 +94,28 @@ describe('evaluateStateMsg', function()
 
         assert.are.same(mt, protocol.evaluateStateMsg(correctMsg15, mockBoard))
     end)
+
+    it('returns a mt if everything is OK and its OPPs turn', function()
+        mt = moveTurn:new(nil)
+        mt.move = -1
+        mt.endMove = false
+        mt.again = false
+
+        assert.are.same(mt, protocol.evaluateStateMsg(correctMsg .. "OPP\n", mockBoard))
+    end)
+
+    it('returns a mt if everything is OK and its end of the game', function()
+        mt = moveTurn:new(nil)
+        mt.move = -1
+        mt.endMove = true
+        mt.again = false
+
+        assert.are.same(mt, protocol.evaluateStateMsg(correctMsg .. "END\n", mockBoard))
+    end)
+
+    it('returns nil if turn not recognised', function()
+        assert.Nil(mt, protocol.evaluateStateMsg(correctMsg .. "1337", mockBoard))
+    end)
+
 end)
 
