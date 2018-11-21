@@ -51,7 +51,7 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
-function protocol.evaluateStateMsg(message, board)
+function protocol.evaluateStateMsg(message, boardArg)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
