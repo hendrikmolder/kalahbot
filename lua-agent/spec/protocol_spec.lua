@@ -1,4 +1,8 @@
 protocol = require 'protocol'
+board = require 'board'
+moveTurn = require 'moveTurn'
+
+local pl = require 'pl.pretty'
 
 -- Define strings for testing
 startStr    = "START;asdasd"
@@ -56,9 +60,38 @@ describe('evaluateStartMsg', function()
     end)
 end)
 
+-- INTEGRATION TESTS with board
 describe('evaluateStateMsg', function()
+    local incorrectEnd = "START;asd;asd;asd"
+    local threeParts = "START;asd;asd\n"
+    local boardParts14 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1"
+    local boardParts15 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"
+    local correctMsg14 = "CHANGE;SWAP;" .. boardParts14 .. ";YOU\n"
+    local correctMsg15 = "CHANGE;SWAP;" .. boardParts15 .. ";YOU\n"
+
+    -- Mock the board
+    local mockBoard = mock(board:new(7,7))
+
     it('returns nil if the message doesnt end correctly', function()
-        assert.Nil(protocol.evaluateStateMsg("START;asdasd;asd", nil))
+        assert.Nil(protocol.evaluateStateMsg(incorrectEnd, nil))
+    end)
+
+    it('returns nil if the message doesnt have 4 parts', function()
+        assert.Nil(protocol.evaluateStateMsg(threeParts, nil))
+    end)
+
+    it('returns board error if the board dimensions dont match', function()
+        -- assert.spy(mockBoard.getNoOfHoles).was.called()
+        assert.Nil(protocol.evaluateStateMsg(correctMsg14, mockBoard))
+    end)
+
+    it('returns a move turn if everything is OK', function()
+        mt = moveTurn:new(nil)
+        mt.move = -1
+        mt.endMove = false
+        mt.again = true
+
+        assert.are.same(mt, protocol.evaluateStateMsg(correctMsg15, mockBoard))
     end)
 end)
 
