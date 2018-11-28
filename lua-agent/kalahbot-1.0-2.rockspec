@@ -18,6 +18,10 @@ build = {
       protocol = "protocol.lua",
       ['spec.protocol_spec'] = "spec/protocol_spec.lua",
       board = "board.lua",
-      ['spec.board_spec'] = "spec/board_spec.lua"
+      ['spec.board_spec'] = "spec/board_spec.lua",
+      side = "side.lua",
+      ['spec.side_spec'] = "spec/side_spec.lua",
+      move = "move.lua",
+      ['spec.move_spec'] = "spec/move_spec.lua"
    }
 }
