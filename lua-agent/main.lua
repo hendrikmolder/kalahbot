@@ -41,25 +41,25 @@ function Main:gameLoop()
     local state = Kalah
     while true do
         local msg = Main:readMsg()
-        local messageType = Protocol.getMessageType(msg)
+        local messageType = Protocol:getMessageType(msg)
         if messageType == "START" then
-            local isFirst = Protocol.evaluateStateMsg(msg)
+            local isFirst = Protocol:evaluateStateMsg(msg)
             if (isFirst) then
                 local move = Move:new(Side.NORTH, 1) -- TODO FIND MOVE
-                sendMsg(Protocol.createMoveMsg(move.hole))
+                sendMsg(Protocol:createMoveMsg(move.hole))
             else
                 state:setOurSide(Side.NORTH)
             end
         elseif messageType == "CHANGE" then
-            local turn = Protocol.evaluateStateMsg(msg)
+            local turn = Protocol:evaluateStateMsg(msg)
             state:performMove(Move:new(state.sideToMove, turn.move))
             if not turn.endMove then
                 if turn.again then
                     local move = Move:new(Side.NORTH, 1)
                     if move.hole == 0 then
-                        sendMsg(Protocol.createSwapMsg())
+                        sendMsg(Protocol:createSwapMsg())
                     else
-                        sendMsg(Protocol.createMoveMessage(move.hole))
+                        sendMsg(Protocol:createMoveMessage(move.hole))
                     end
                 end
             end
