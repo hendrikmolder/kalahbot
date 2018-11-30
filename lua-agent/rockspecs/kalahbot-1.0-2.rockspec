@@ -22,6 +22,7 @@ build = {
       side = "side.lua",
       ['spec.side_spec'] = "spec/side_spec.lua",
       move = "move.lua",
-      ['spec.move_spec'] = "spec/move_spec.lua"
+      ['spec.move_spec'] = "spec/move_spec.lua",
+      main = "main.lua"
    }
 }
