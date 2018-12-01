@@ -7,7 +7,6 @@ log = require 'utils.log'
 
 Main = {}
 
--- Define game "object"
 function Main:new (o)
     o = o or {}
     setmetatable(o, self)
@@ -19,7 +18,6 @@ function Main:sendMsg(msg)
     io.write(msg, '\n')
 end
 
--- DONE this should have some sort of check
 function Main:readMsg()
     local msg = io.read()
     if (msg == nil) then
@@ -28,7 +26,6 @@ function Main:readMsg()
     return msg
 end
 
--- DONE Change function calls based on game messages perhaps
 function Main:gameLoop()
     log.info('gameLoop() started.')
     local state = Kalah
@@ -71,5 +68,4 @@ end
 
 
 game = Main
--- game:GameLoop()
 game:gameLoop()
