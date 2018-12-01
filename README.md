@@ -9,7 +9,7 @@ The runnable file is `main.lua`. To run the bot, just run that file using `lua m
 
 1. Install Lua
 2. Install Luarocks using `sudo apt-get install luarocks` or `brew install luarocks` if you have home brew installed.
-3. Navigate into the `lua-agent` directory and install dependencies using `luarocks make --local`.
+3. Navigate into the `lua-agent` directory and install dependencies using `luarocks make --local rockspecks/<choose the latest rockspec>`.
 
 ### Project structure
 
