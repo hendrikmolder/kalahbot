@@ -11,6 +11,11 @@ Board = require 'board'
 Move = require 'move'
 Kalah = require 'kalah'
 Side = require 'Side'
+Log = require 'utils.log'
+
+-- Set logfile to output logs to the logs directory
+-- Set file name to be mm/DD/YY-HH:MM::SS.log
+Log.outfile = 'logs/'..(os.date("Log-%c"))..'.log'
 
 Main = {}
 
@@ -39,19 +44,22 @@ end
 -- DONE Change function calls based on game messages perhaps
 function Main:gameLoop()
     local state = Kalah
+
     while true do
         local msg = Main:readMsg()
-        local messageType = Protocol:getMessageType(msg)
-        if messageType == "START" then
-            local isFirst = Protocol:evaluateStateMsg(msg)
+        Log.debug("Message Received:", msg)
+        local messageType = Protocol.getMessageType(msg)
+        if messageType == "start" then
+            local isFirst = Protocol.evaluateStartMsg(msg)
+            Log.info("Message is first:", isFirst)
             if (isFirst) then
                 local move = Move:new(Side.NORTH, 1) -- TODO FIND MOVE
                 sendMsg(Protocol:createMoveMsg(move.hole))
             else
                 state:setOurSide(Side.NORTH)
             end
-        elseif messageType == "CHANGE" then
-            local turn = Protocol:evaluateStateMsg(msg)
+        elseif messageType == "change" then
+            local turn = Protocol.evaluateStateMsg(msg)
             state:performMove(Move:new(state.sideToMove, turn.move))
             if not turn.endMove then
                 if turn.again then
@@ -64,7 +72,7 @@ function Main:gameLoop()
                 end
             end
 
-        elseif messageType == "END\n" then
+        elseif messageType == "end" then
             break
 
         end
