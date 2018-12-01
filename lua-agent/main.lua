@@ -1,11 +1,3 @@
---
--- Created by IntelliJ IDEA.
--- User: aayushchadha
--- Date: 23/11/18
--- Time: 12:07
--- To change this template use File | Settings | File Templates.
---
-
 Protocol = require 'protocol'
 Board = require 'board'
 Move = require 'move'
