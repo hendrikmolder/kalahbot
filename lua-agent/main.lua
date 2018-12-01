@@ -2,12 +2,8 @@ Protocol = require 'protocol'
 Board = require 'board'
 Move = require 'move'
 Kalah = require 'kalah'
-Side = require 'Side'
+Side = require 'side'
 Log = require 'utils.log'
-
--- Set logfile to output logs to the logs directory
--- Set file name to be mm/DD/YY-HH:MM::SS.log
-Log.outfile = 'logs/'..(os.date("Log-%c"))..'.log'
 
 Main = {}
 
@@ -26,7 +22,6 @@ end
 -- DONE this should have some sort of check
 function Main:readMsg()
     local msg = io.read()
-    print (msg)
     if (msg == nil) then
         error("Unexpected end of input")
     end
@@ -35,12 +30,14 @@ end
 
 -- DONE Change function calls based on game messages perhaps
 function Main:gameLoop()
+    Log.info('gameLoop() started.')
     local state = Kalah
 
     while true do
         local msg = Main:readMsg()
-        Log.debug("Message Received:", msg)
+        Log.info("Message Received:", msg)
         local messageType = Protocol.getMessageType(msg)
+
         if messageType == "start" then
             local isFirst = Protocol.evaluateStartMsg(msg)
             Log.info("Message is first:", isFirst)
@@ -69,6 +66,7 @@ function Main:gameLoop()
 
         end
     end
+    Log.info('gameLoop() stopped.')
 end
 
 
