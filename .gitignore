@@ -46,4 +46,4 @@ luac.out
 .idea/**
 
 # Logs
-lua-agent/logs/*
+lua-agent/logs/*.log
