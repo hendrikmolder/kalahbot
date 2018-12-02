@@ -1,6 +1,7 @@
-local pl = require 'pl.stringx'
+require('pl.stringx').import()
 MoveTurn = require 'moveTurn'
 Board = require 'board'
+log = require 'utils.log'
 
 local protocol = {}
 
@@ -19,7 +20,7 @@ function protocol.getMessageType(message)
     if message:sub(1, #endMsg) == endMsg then return endString end
 
     -- Message was not recognized
-    print("Message was not recognised.")
+    log.error('Message type was not recognized:', message)
     return nil
 end
 
@@ -37,7 +38,10 @@ end
 -- Should be called when getMessageType returns START
 function protocol.evaluateStartMsg(message)
     -- Check if the message has a valid ending character
-    if message:sub(#message, #message) ~= "\n" then return nil end
+    if message:sub(#message, #message) ~= "\n" then
+        log.error('Expected last character to be \"/n\", received:', message:sub(#message, #message))
+        return nil
+    end
 
     -- Indexing starts at 1, hence we use 7 not 6
     local position = message:sub(7, #message - 1)
@@ -46,7 +50,7 @@ function protocol.evaluateStartMsg(message)
     elseif position == "North" then
         return false
     else
-        print("Illegal position paramter: " .. position)
+        log.error('Illegal position parameter:', position)
         return nil
     end
 end
@@ -56,7 +60,7 @@ function protocol.evaluateStateMsg(message, board)
     if message:sub(#message, #message) ~= "\n" then return nil end
 
     local moveTurn = MoveTurn:new(nil)
-    local msgParts = pl.split(message, ";", 4)
+    local msgParts = message:split(";", 4)
 
     -- If message does not have 4 parts, it is missing arguments
     if #msgParts ~= 4 then return nil end
@@ -72,7 +76,7 @@ function protocol.evaluateStateMsg(message, board)
     end
 
     -- msgparts[3] -- the board
-    local boardParts = pl.split(msgParts[3], ",")
+    local boardParts = msgParts[3]:split(",")
 
     if 2 * board:getNoOfHoles() + 1 ~= #boardParts then
         print("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
