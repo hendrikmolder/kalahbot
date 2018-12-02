@@ -80,7 +80,7 @@ function protocol.evaluateStateMsg(message, board)
     if msgParts[2] == "SWAP" then
         moveTurn.move = -1
     else
-        moveTurn.move = msgParts[2]
+        moveTurn.move = tonumber(msgParts[2])
     end
 
     -- msgparts[3] -- the board
