@@ -86,8 +86,9 @@ function protocol.evaluateStateMsg(message, board)
     -- msgparts[3] -- the board
     local boardParts = msgParts[3]:split(",")
 
-    if 2 * board:getNoOfHoles() + 1 ~= #boardParts then
-        print("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
+    if 2 * board:getNoOfHoles() + 2 ~= #boardParts then
+        log.error("Board holes error: expected " .. 2 *board:getNoOfHoles() + 2 .. " but received " .. #boardParts)
+        log.info('Board holes received:', boardParts)
         return nil
     end
 
