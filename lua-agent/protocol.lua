@@ -103,6 +103,7 @@ function protocol.evaluateStateMsg(message, board)
     board:setSeedsInStore("NORTH", boardParts[board:getNoOfHoles()])
     -- South store
     board:setSeedsInStore("SOUTH", boardParts[2 * board:getNoOfHoles() + 1])
+    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
