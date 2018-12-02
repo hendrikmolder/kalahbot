@@ -1,4 +1,6 @@
 package.path = "./?.lua;;" .. package.path -- Fix path if needed and *prefer* local modules instead of luarocks
+local pl = require 'pl.pretty'
+
 protocol = require 'protocol'
 Board = require 'board'
 Move = require 'move'
@@ -16,20 +18,22 @@ function Main:new (o)
 end
 
 function Main:sendMsg(msg)
-    io.write(msg, '\n')
+    io.write(msg)
+    log.info('Message sent:', msg)
 end
 
 function Main:readMsg()
-    local msg = io.read()
+    local msg = string.format( "%s\n", io.read())
     if (msg == nil) then
-        error("Unexpected end of input")
+        log.error("Unexpected end of input at:", msg)
     end
     return msg
 end
 
 function Main:gameLoop()
-    log.info('gameLoop() started.')
+    log.info('Game loop started.')
     local state = Kalah
+    local board = Board:new(7,7)
 
     while true do
         local msg = Main:readMsg()
@@ -38,10 +42,9 @@ function Main:gameLoop()
 
         if messageType == "start" then
             local isFirst = protocol.evaluateStartMsg(msg)
-            log.info("Message is first:", isFirst)
             if (isFirst) then
-                local move = Move:new(Side.NORTH, 1) -- TODO FIND MOVE
-                sendMsg(protocol.createMoveMsg(move.hole))
+                local move = Move:new(nil, Side.NORTH, 2) -- TODO FIND MOVE
+                Main:sendMsg(protocol.createMoveMsg(move.hole))
             else
                 state:setOurSide(Side.NORTH)
             end
@@ -67,6 +70,6 @@ function Main:gameLoop()
     log.info('gameLoop() stopped.')
 end
 
-
+log.info('Bot started.')
 game = Main
 game:gameLoop()

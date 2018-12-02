@@ -104,15 +104,18 @@ function Board:addSeedsToStore(side, seeds)
 end
 
 function Board:toString()
+    local s = {}
     -- Loop over row
     for k,v in pairs(self.board) do
         for wells, _ in pairs(v) do
-            io.write(self.board[k][wells] .. " | ")
+            table.insert(s, tostring(self.board[k][wells] .. " "))
             if (k == 1 and  wells == 8) then
-                io.write("\n")
+                table.insert(s, "\n")
             end
         end
     end
+
+    return table.concat(s)
 end
 
 return Board
