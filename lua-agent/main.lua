@@ -1,3 +1,4 @@
+package.path = "./?.lua;;" .. package.path -- Fix path if needed and *prefer* local modules instead of luarocks
 protocol = require 'protocol'
 Board = require 'board'
 Move = require 'move'
@@ -59,8 +60,8 @@ function Main:gameLoop()
             end
 
         elseif messageType == "end" then
+            log.info('Received END command. Stopping.')
             break
-
         end
     end
     log.info('gameLoop() stopped.')
