@@ -14,10 +14,18 @@ function protocol.getMessageType(message)
     -- Dont even ask
     local endString = "end"
 
-    if message == nil then return nil end
-    if message:sub(1, #startMsg) == startMsg then return "start" end
-    if message:sub(1, #changeMsg) == changeMsg then return "state" end
-    if message:sub(1, #endMsg) == endMsg then return endString end
+    if message == nil then
+        return nil
+    elseif message:sub(1, #startMsg) == startMsg then
+        log.info('Message type is START')
+        return "start"
+    elseif message:sub(1, #changeMsg) == changeMsg then
+        log.info('Message type is CHANGE')
+        return "state"
+    elseif message:sub(1, #endMsg) == endMsg then
+        log.info('Message type is END')
+        return endString
+    end
 
     -- Message was not recognized
     log.error('Message type was not recognized:', message)
