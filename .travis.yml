@@ -1,27 +1,32 @@
 language: python
 sudo: false
-
 env:
-  - LUA="lua=5.3"
-  # - LUA="luajit=2.0"
-  # - LUA="luajit=2.1"
-
+- LUA="lua=5.3"
 before_install:
-  - pip install hererocks
-  - hererocks lua_install -r^ --$LUA
-  - export PATH=$PATH:$PWD/lua_install/bin
-  - cd lua-agent
-
+- pip install hererocks
+- hererocks lua_install -r^ --$LUA
+- export PATH=$PATH:$PWD/lua_install/bin
+- cd lua-agent
 install:
-  - luarocks install luacheck
-  - luarocks install busted
-  - luarocks install luacov
-  - luarocks install luacov-coveralls
-
+- luarocks install luacheck
+- luarocks install busted
+- luarocks install luacov
+- luarocks install luacov-coveralls
 script:
-  # If there's 100 or less *warnings* it's probably ok? lol
-  - luacheck --std max+busted *.lua --exclude-files *_spec.lua -g -d -t -q --no-self
-  - busted --verbose --coverage
-
+- luacheck --std max+busted *.lua --exclude-files *_spec.lua -g -d -t -q --no-self
+- busted --verbose --coverage
 after_success:
-  - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
+- luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
+before_deploy:
+- export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+- git tag $TRAVIS_TAG
+- tar czvpf `kalahbot-$TRAVIS_TAG.tar.gz` --exclude='*.rockspec' --exclude='./logs' --exclude='*.tar.gz' .
+deploy:
+  provider: releases
+  draft: true
+  api_key:
+    secure: D2a9ome4xsMTkKDG9LJCNDvhFxNfC20VyfzgrtQwFil/tshuC/fgKIEw/en2M7P7bSOMzdDyugtQhI1Xuiyv80h7ae6npW8kgwoX5lOpDEv50/MnO1XFo/9C8Y48jEeDlYrnt4MDU4IFcNse0xejh7LkVGUgxgP2czKUP4Im3N7JoAcNqIffSvDljQbAJKm0cf+dB/vO+sJdkpxXw6kAN6wDUCs5BAl/W5Hz0KSEPZHBscPsZbI3IH0gzRPUVi6+K9KowDNq1FLiXuJDASacn+jtdDdbnZkULz9s5BSxygtqKfuBJn6c0vEq863W58eQof6OwfUwsPHuC/IHCAL70hhCXN1C0g9VvxU4zrrWNeVFJFxXGEtDpzv2lj6AK3SPzWEiMkznmo4RgVZq24ZKXQflV1jnoNlzkwGYAjARrxDHmtXMRIdq7qqHQZ0Eu9PcGvDDY8NfpzBDJYYiDh36KtFf5DwORKmhgLsFKPP/xEpWRPKBwHVM7gzpqo/CH8DinOe/CvEdOflBaFNK7jPTyqv++C310rhmVWHqmkPk7boUaWysYgXUt80s0tdg7lw3Q77h1f08xWD5VKFEcSf5UY0h/sD+/hL1XblsGuJ/2ccUeJ2xGP+6XSJffDbaoSL7BwgJ/yhE28W1G7NdyMImlvvd+HjKJ8OCpOtXGl+oXgY=
+  file: `kalahbot-$TRAVIS_TAG.tar.gz`
+  on:
+    repo: hendrikmolder/kalahbot
+    branch: master
