@@ -31,6 +31,7 @@ end
 function Main:gameLoop()
     log.info('Game loop started.')
     local state = Kalah
+    local board = Board:new(7,7)
 
     while true do
         local msg = Main:readMsg()
