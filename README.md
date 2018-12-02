@@ -3,40 +3,28 @@
 # kalahbot
 COMP34120 Project 1
 
-## Project Plan:
-
-1. Build game engine in Lua, first with MCTS and then with RL if possible.
-2. Try reinforcement learning. Start[here.](https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0)
-
-
-## Reference Documents:
-
-1. [Monte Carlo Tree Search for Kalah](http://www.cs.du.edu/~sturtevant/papers/im-mcts.pdf)
-
-## Deadlines:
-
-- [ ] 14/10/2018
-    - Get template code for game playing agent setup locally.
-    - Finish reading MCTS [1] paper for Kalah.
-- [ ] 1/11/2018
-    - Finish MCTS implementation.
-- [ ] 13/12/2018
-    - Final project submission.
-
 ## Running & Developing
 
 The runnable file is `main.lua`. To run the bot, just run that file using `lua main.lua`.
 
 1. Install Lua
 2. Install Luarocks using `sudo apt-get install luarocks` or `brew install luarocks` if you have home brew installed.
-3. Navigate into the `lua-agent` directory and install dependencies using `luarocks make --local`.
+3. Navigate into the `lua-agent` directory and install dependencies using `luarocks make --local rockspecks/<choose the latest rockspec>`.
+4. You may need to add luarocks path to your lua path by using `eval $(luarocks path --bin)` on UNIX systems.
+
+### Logs
+
+Logs are stored in `logs` subfolder. If it doesn't exist, you may have to create it under `lua-agent`. Logfiles are named by the system date. Reccommended way to see logs is using `tail -f <logfile>`.
 
 ### Project structure
 
 ```
 . (kalahbot)
 ├─ lua-agent        (the lua agent that plays the game)
+|  └─ logs          (logs directory, logfiles ignored by git)
+|  └─ rockspecks    (luarocks rockspecs)
 |  └─ spec          (lua tests)
+|  └─ utils         (util functions)
 ├─ mankalah         (the game engine that was provided)
 ```
 
