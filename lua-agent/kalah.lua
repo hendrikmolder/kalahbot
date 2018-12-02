@@ -1,6 +1,7 @@
 Board = require 'board'
 Side = require 'side'
 
+-- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
 
 -- This class also maintains game state
 local Kalah = {}
@@ -10,6 +11,7 @@ Kalah.__index = State
 -- and the side that has to move
 
 -- State Implementation based on - https://github.com/aleju/mario-ai/blob/master/state.lua
+-- luacheck: ignore self
 function Kalah:new(board, ourSide, sideToMove)
     local self = setmetatable({}, Kalah)
     self.board = board or Board:new(7,7)
@@ -57,6 +59,7 @@ end
 
 -- Checks whether all holes are empty
 function Kalah:holesEmpty(board, side)
+    -- luacheck: ignore
     for hole=1,board:getNoOfHoles() do
         if (board:getSeeds(side, hole) ~= 0) then return false end
         return true
@@ -90,6 +93,7 @@ function Kalah:makeMove(board, move)
     local sowHole = move:getHole()
     for i=extra,1,-1 do
         sowHole = sowHole + 1
+        -- luacheck: ignore extra
         extra=i
         if sowHole == 1 then
             -- TODO implment side.lua
