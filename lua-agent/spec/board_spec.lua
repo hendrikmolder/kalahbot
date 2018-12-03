@@ -7,6 +7,7 @@
 --
 
 board = require 'board'
+Side = require 'side'
 
 northSideString = "NORTH"
 southSideString = "SOUTH"
@@ -17,11 +18,11 @@ agentTestBoard = testBoard:copyBoard(testBoard)
 
 describe('indexOfSide', function()
     it('returns 1 if the side is north', function()
-        assert.equals(testBoard:indexOfSide(northSideString), 1)
+        assert.equals(testBoard:indexOfSide(Side.NORTH), 1)
     end)
 
     it('returns 2 if the side is south', function()
-        assert.equals(testBoard:indexOfSide(southSideString), 2)
+        assert.equals(testBoard:indexOfSide(Side.South), 2)
     end)
 end)
 
