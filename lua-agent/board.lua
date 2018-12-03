@@ -16,7 +16,7 @@ Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0, board={}}
 Board.__index = Board
 
 function Board:indexOfSide(side)
-    -- Not sure if we should be using a string here
+    -- DONE Not sure if we should be using a string here
     if (side == Side.NORTH) then
         return self.NORTH_ROW
     else
@@ -111,7 +111,7 @@ function Board:toString()
     for k,v in pairs(self.board) do
         for wells, _ in pairs(v) do
             table.insert(s, tostring(self.board[k][wells] .. " "))
-            if (k == 1 and  wells == 8) then
+            if (k == 2 and  wells == 1) then
                 table.insert(s, "\n")
             end
         end
