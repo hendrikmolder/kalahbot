@@ -12,7 +12,7 @@ northSideString = "NORTH"
 southSideString = "SOUTH"
 
 
-testBoard = board:new(7,7)
+testBoard = board:new(nil, 7,7)
 agentTestBoard = testBoard:copyBoard(testBoard)
 
 describe('indexOfSide', function()
