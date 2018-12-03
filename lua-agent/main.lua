@@ -62,11 +62,11 @@ function Main:gameLoop()
             state:performMove(move)
             if not turn.endMove then
                 if turn.again then
-                    local move = Move:new(nil, Side.NORTH, 1)
-                    if move.hole == 0 then
+                    local makeMove = Move:new(nil, Side.NORTH, 1)
+                    if makeMove.hole == 0 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
-                        Main:sendMsg(protocol.createMoveMsg(move.hole))
+                        Main:sendMsg(protocol.createMoveMsg(makeMove.hole))
                     end
                 end
             end
