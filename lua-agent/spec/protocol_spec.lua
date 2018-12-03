@@ -65,13 +65,13 @@ describe('evaluateStateMsg', function()
     local incorrectEnd = "START;asd;asd;asd"
     local threeParts = "START;asd;asd\n"
     local boardParts14 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1"
-    local boardParts15 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"
+    local boardParts16 = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"
     local correctMsg14 = "CHANGE;SWAP;" .. boardParts14 .. ";YOU\n"
-    local correctMsg15 = "CHANGE;SWAP;" .. boardParts15 .. ";YOU\n"
-    local correctMsg = "CHANGE;SWAP;" .. boardParts15 .. ";"
+    local correctMsg16 = "CHANGE;SWAP;" .. boardParts16 .. ";YOU\n"
+    local correctMsg = "CHANGE;SWAP;" .. boardParts16 .. ";"
 
     -- Mock the board
-    local mockBoard = board:new(7,7)
+    local mockBoard = board:new(nil, 7,7)
 
     it('returns nil if the message doesnt end correctly', function()
         assert.Nil(protocol.evaluateStateMsg(incorrectEnd, nil))
@@ -92,7 +92,7 @@ describe('evaluateStateMsg', function()
         mt.endMove = false
         mt.again = true
 
-        assert.are.same(mt, protocol.evaluateStateMsg(correctMsg15, mockBoard))
+        assert.are.same(mt, protocol.evaluateStateMsg(correctMsg16, mockBoard))
     end)
 
     it('returns a mt if everything is OK and its OPPs turn', function()
