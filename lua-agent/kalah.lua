@@ -5,7 +5,7 @@ Side = require 'side'
 
 -- This class also maintains game state
 local Kalah = {}
-Kalah.__index = State
+Kalah.__index = Kalah
 
 -- New State contains a reference to the board, the side that belongs to us
 -- and the side that has to move
@@ -27,7 +27,7 @@ end
 
 -- Set side
 function Kalah:setOurSide(side)
-    self.side = side
+    self.ourSide = side
 end
 
 
@@ -37,6 +37,10 @@ end
 
 function Kalah:getOurSide()
     return self.ourSide
+end
+
+function Kalah:getSideToMove()
+    return self.sideToMove
 end
 
 function Kalah:setBoard(board)
@@ -54,6 +58,7 @@ function Kalah:isLegalMove(move)
 end
 
 function Kalah:makeMove(move)
+    log.debug("Move is: ", move)
     return self.makeMove(self.board, move)
 end
 

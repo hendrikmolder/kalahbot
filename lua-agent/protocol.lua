@@ -115,7 +115,7 @@ function protocol.evaluateStateMsg(message, board)
         moveTurn.endMove = true
         moveTurn.again = false
     else
-        print("Illegal value for turn parameter " .. msgParts[4])
+        log.error("Illegal value for turn parameter " .. msgParts[4])
         return nil
     end
 
