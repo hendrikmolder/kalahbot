@@ -57,7 +57,7 @@ function Kalah:isLegalMove(move)
         and (self.board:getSeeds(move.getSide(), move.getHole()) ~= 0)
 end
 
-function Kalah:makeMove(move)
+function Kalah:performMove(move)
     log.debug("Move is: ", move)
     return self.makeMove(self.board, move)
 end
