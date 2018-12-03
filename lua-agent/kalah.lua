@@ -65,9 +65,11 @@ end
 function Kalah:holesEmpty(board, side)
     -- luacheck: ignore
     for hole=1,board:getNoOfHoles() do
+        -- Check if any hole has a seed remaining
         if (board:getSeeds(side, hole) ~= 0) then return false end
-        return true
     end
+
+    return true
 end
 
 -- Checks whether the game is over (based on the board)
@@ -77,8 +79,10 @@ end
 
 function Kalah:makeMove(board, move)
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
+    -- Empty the selected cell
     board:setSeeds(move:getSide(), move:getHole(), 0)
 
+    -- Fetch board holes
     local holes = board:getNoOfHoles()
     local receivingPits = 2*holes + 1
     local rounds = math.floor(seedsToSow / receivingPits)
@@ -103,11 +107,11 @@ function Kalah:makeMove(board, move)
             -- DONE implment side.lua
             sowSide = Side:getOpposite(sowSide)
         end
-
+        -- We now add seeds to the store
         if sowHole > holes then
             if (sowSide == move:getSide()) then
                 -- Lua counts from 1
-                sowHole = 1
+                sowHole = 8
                 board:addSeedsToStore(sowSide, 1);
             else
                 sowSide = Side:getOpposite(sowSide)
@@ -128,13 +132,15 @@ function Kalah:makeMove(board, move)
         board:addSeedsToStore(move:getSide(), 1+board:getSeedsOp(move:getSide(), sowHole))
         board:setSeeds(move:getSide(), sowHole, 0)
         board:setSeedsOp(move:getSide(), sowHole, 0)
+        log.info("board is now\n", board:toString())
     end
 
     local finishedSide
 
+    -- This should check for end of the game, but for some reason finishedSide gets set to 2
     if (self:holesEmpty(board, move:getSide())) then
         finishedSide = move:getSide()
-    elseif (self:holesEmpty(board, Side.getOpposite(move:getSide()))) then
+    elseif (self:holesEmpty(board, Side:getOpposite(move:getSide()))) then
         finishedSide = Side:getOpposite(move:getSide())
     end
 
@@ -143,7 +149,7 @@ function Kalah:makeMove(board, move)
         local collectingSide = Side:getOpposite(finishedSide)
         for hole=1, board:getNoOfHoles() do
             seeds = seeds + board:getSeeds(collectingSide, hole)
-            board:setSeeds(collectingSide, hole, 0)
+            board:setSeeds(collectingSide, hole, 8)
         end
 
         board:addSeedsToStore(collectingSide, seeds)
