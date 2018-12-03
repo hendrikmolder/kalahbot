@@ -2,6 +2,7 @@ require('pl.stringx').import()
 MoveTurn = require 'moveTurn'
 Board = require 'board'
 log = require 'utils.log'
+Side = require 'side'
 
 local protocol = {}
 
@@ -94,15 +95,15 @@ function protocol.evaluateStateMsg(message, board)
 
     for hole=1,board:getNoOfHoles() do
         -- North holes
-        board:setSeeds("NORTH", hole+1, boardParts[hole])
+        board:setSeeds(Side.NORTH, hole+1, boardParts[hole])
         -- South holes
-        board:setSeeds("SOUTH", hole+1, boardParts[hole + board:getNoOfHoles() + 1])
+        board:setSeeds(Side.SOUTH, hole+1, boardParts[hole + board:getNoOfHoles() + 1])
     end
 
     -- North store
-    board:setSeedsInStore("NORTH", boardParts[board:getNoOfHoles()])
+    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()])
     -- South store
-    board:setSeedsInStore("SOUTH", boardParts[2 * board:getNoOfHoles() + 2])
+    board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
     log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
