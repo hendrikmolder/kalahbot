@@ -34,6 +34,8 @@ function Main:gameLoop()
     log.info('Game loop started.')
     local state = Kalah
     local board = Board:new(7,7)
+    state:setBoard(board)
+    log.info('State board set to:', state:getBoard():toString())
 
     while true do
         local msg = Main:readMsg()
@@ -48,10 +50,12 @@ function Main:gameLoop()
             end
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, board)
-            log.info("Side to move", state.sideToMove)
+            log.info("Side to move:", state:getSideToMove())
+
             local move = Move:new(nil, state:getSideToMove(), turn.move)
-            log.info("Move is: ", move)
-            state:makeMove(move)
+            log.info("Move: ", pl.write(move))
+
+            state:performMove(move)
             if not turn.endMove then
                 if turn.again then
                     local move = Move:new(Side.NORTH, 1)
