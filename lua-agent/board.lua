@@ -26,7 +26,7 @@ end
 
 -- Board can be created with or without specifying any of the parameters
 function Board:new(o, holes, seeds)
-
+    --luacheck: ignore o
     local o = o or {}
     setmetatable(o, self)
     self.__index = self
