@@ -24,6 +24,7 @@ end
 
 function Main:readMsg()
     local msg = string.format( "%s\n", io.read())
+    log.info('Message received:', msg)
     if (msg == nil) then
         log.error("Unexpected end of input at:", msg)
     end
@@ -32,9 +33,9 @@ end
 
 function Main:gameLoop()
     log.info('Game loop started.')
-    local state = Kalah
     local board = Board:new(7,7)
-    state:setBoard(board)
+    local state = Kalah:new(board)
+
     log.info('State board set to:', state:getBoard():toString())
 
     while true do
@@ -48,11 +49,13 @@ function Main:gameLoop()
             else
                 state:setOurSide(Side.NORTH)
             end
+
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, board)
-            log.info("Side to move:", state:getSideToMove())
+            log.info("Turn:", pl.write(turn))
 
-            local move = Move:new(nil, state:getSideToMove(), turn.move)
+            local move = Move:new(nil, state.sideToMove, turn.move)
+            log.debug('State:', pl.write(state))
             log.info("Move: ", pl.write(move))
 
             state:performMove(move)
