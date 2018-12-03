@@ -9,13 +9,15 @@
 -- Create a board object with default values
 -- board variable is instantiated as a table / matrix,
 -- we shall add the rows later
-Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0}
+Side = require 'side'
+
+Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0, board={}}
 
 Board.__index = Board
 
 function Board:indexOfSide(side)
     -- Not sure if we should be using a string here
-    if (side == "NORTH") then
+    if (side == Side.NORTH) then
         return self.NORTH_ROW
     else
         return self.SOUTH_ROW
@@ -23,9 +25,9 @@ function Board:indexOfSide(side)
 end
 
 -- Board can be created with or without specifying any of the parameters
-function Board:new(holes, seeds)
+function Board:new(o, holes, seeds)
 
-    local o = {}
+    local o = o or {}
     setmetatable(o, self)
     self.__index = self
     self.holes = holes or 1
@@ -76,18 +78,18 @@ function Board:addSeeds(side, hole, seeds)
 end
 
 function Board:getSeedsOp(side, hole)
-    if (side == "NORTH") then return self.board[2][self.holes+1-hole]
+    if (side == Side.NORTH) then return self.board[2][self.holes+1-hole]
     else return self.board[1][self.holes+1-hole] end
 end
 
 function Board:setSeedsOp(side, hole, seeds)
-    if (side == "NORTH") then self.board[2][self.holes+1-hole] = seeds
+    if (side == Side.NORTH) then self.board[2][self.holes+1-hole] = seeds
     else self.board[1][self.holes+1-hole] = seeds end
 end
 
 -- TODO this function's logic seems a bit dodgy to me, hopefully tests catch it if it is
 function Board:addSeedsOp(side, hole, seeds)
-    if (side == "NORTH") then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
+    if (side == Side.NORTH) then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
     else self.board[1][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds end
 end
 

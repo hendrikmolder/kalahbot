@@ -20,6 +20,7 @@ function Side:getOpposite(side)
     return self.NORTH
 end
 
+
 return Side
 
 

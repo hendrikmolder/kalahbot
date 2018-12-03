@@ -33,8 +33,9 @@ end
 
 function Main:gameLoop()
     log.info('Game loop started.')
-    local board = Board:new(7,7)
-    local state = Kalah:new(board)
+--    local board = Board:new(nil, 7,7)
+    log.debug(pl.write(board))
+    local state = Kalah:new()
 
     log.info('State board set to:', state:getBoard():toString())
 
@@ -51,21 +52,21 @@ function Main:gameLoop()
             end
 
         elseif messageType == "state" then
-            local turn = protocol.evaluateStateMsg(msg, board)
+            local turn = protocol.evaluateStateMsg(msg, state:getBoard())
             log.info("Turn:", pl.write(turn))
 
             local move = Move:new(nil, state.sideToMove, turn.move)
             log.debug('State:', pl.write(state))
-            log.info("Move: ", pl.write(move))
+            log.info("Move in main: ", pl.write(move))
 
             state:performMove(move)
             if not turn.endMove then
                 if turn.again then
-                    local move = Move:new(Side.NORTH, 1)
+                    local move = Move:new(nil, Side.NORTH, 1)
                     if move.hole == 0 then
-                        sendMsg(protocol.createSwapMsg())
+                        Main:sendMsg(protocol.createSwapMsg())
                     else
-                        sendMsg(protocol.createMoveMessage(move.hole))
+                        Main:sendMsg(protocol.createMoveMsg(move.hole))
                     end
                 end
             end
