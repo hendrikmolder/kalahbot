@@ -1,3 +1,5 @@
+local pl = require 'pl.pretty'
+
 Board = require 'board'
 Side = require 'side'
 
@@ -14,7 +16,7 @@ Kalah.__index = Kalah
 -- luacheck: ignore self
 function Kalah:new(board, ourSide, sideToMove)
     local self = setmetatable({}, Kalah)
-    self.board = board or Board:new(7,7)
+    self.board = board or Board:new(nil, 7,7)
     self.ourSide = ourSide or Side.SOUTH
     self.sideToMove = sideToMove or Side.SOUTH
     return self
@@ -58,8 +60,8 @@ function Kalah:isLegalMove(move)
 end
 
 function Kalah:performMove(move)
-    log.debug("Move is: ", move)
-    return self.makeMove(self.board, move)
+    log.debug("Move in performMove: ", pl.write(move))
+    return self:makeMove(self:getBoard(), move)
 end
 
 -- Checks whether all holes are empty
@@ -77,12 +79,13 @@ function Kalah:gameOver(board)
 end
 
 function Kalah:makeMove(board, move)
+    log.debug("Move in makeMove", move.side)
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
     board:setSeeds(move:getSide(), move:getHole(), 0)
 
     local holes = board:getNoOfHoles()
     local receivingPits = 2*holes + 1
-    local rounds = seedsToSow / receivingPits
+    local rounds = math.floor(seedsToSow / receivingPits)
     local extra = seedsToSow % receivingPits
 
     if (rounds ~= 0) then
@@ -101,16 +104,17 @@ function Kalah:makeMove(board, move)
         -- luacheck: ignore extra
         extra=i
         if sowHole == 1 then
-            -- TODO implment side.lua
-            sowSide = sowSide:opposite()
+            -- DONE implment side.lua
+            sowSide = Side:getOpposite(sowSide)
         end
 
         if sowHole > holes then
             if (sowSide == move:getSide()) then
-                sowHole = 0
+                -- Lua counts from 1
+                sowHole = 1
                 board:addSeedsToStore(sowSide, 1);
             else
-                sowSide = sowSide:opposite()
+                sowSide = Side:getOpposite(sowSide)
                 sowHole = 1
             end
         end
@@ -120,7 +124,7 @@ function Kalah:makeMove(board, move)
 
     -- Capture
 
-    if ((sowSide == move.getSide())
+    if ((sowSide == move:getSide())
             and (sowHole > 0)
             and (board:getSeeds(sowSide, sowHole) == 1)
             and (board:getSeedsOp(sowSide, sowHole) > 0)) then
@@ -132,15 +136,15 @@ function Kalah:makeMove(board, move)
 
     local finishedSide
 
-    if (holesEmpty(board, move:getSide())) then
+    if (self:holesEmpty(board, move:getSide())) then
         finishedSide = move:getSide()
-    elseif (holesEmpty(board, move:getSide():opposite())) then
-        finishedSide = move:getSide().opposite()
+    elseif (self:holesEmpty(board, Side.getOpposite(move:getSide()))) then
+        finishedSide = Side:getOpposite(move:getSide())
     end
 
     if (finishedSide) then
         local seeds = 0
-        local collectingSide = finishedSide:opposite()
+        local collectingSide = Side:getOpposite(finishedSide)
         for hole=1, board:getNoOfHoles() do
             seeds = seeds + board:getSeeds(collectingSide, hole)
             board:setSeeds(collectingSide, hole, 0)
@@ -154,7 +158,7 @@ function Kalah:makeMove(board, move)
     if (sowHole == 0) then
         return move:getSide()
     else
-        return move:getSide():opposite()
+        return Side:getOpposite(move:getSide())
     end
 end
 
