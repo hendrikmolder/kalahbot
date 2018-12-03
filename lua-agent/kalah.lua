@@ -1,5 +1,3 @@
-local pl = require 'pl.pretty'
-
 Board = require 'board'
 Side = require 'side'
 
