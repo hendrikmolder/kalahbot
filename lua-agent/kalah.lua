@@ -60,7 +60,6 @@ function Kalah:isLegalMove(move)
 end
 
 function Kalah:performMove(move)
-    log.debug("Move in performMove: ", pl.write(move))
     return self:makeMove(self:getBoard(), move)
 end
 
@@ -79,7 +78,6 @@ function Kalah:gameOver(board)
 end
 
 function Kalah:makeMove(board, move)
-    log.debug("Move in makeMove", move.side)
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
     board:setSeeds(move:getSide(), move:getHole(), 0)
 
@@ -158,6 +156,7 @@ function Kalah:makeMove(board, move)
     if (sowHole == 0) then
         return move:getSide()
     else
+        log.info('Returning side:', move:getSide())
         return Side:getOpposite(move:getSide())
     end
 end
