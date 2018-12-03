@@ -62,11 +62,11 @@ function Board:copyBoard(obj)
 end
 
 function Board:getNoOfHoles()
-    return self.holes
+    return tonumber(self.holes)
 end
 
 function Board:getSeeds(side, hole)
-    return self.board[self:indexOfSide(side)][hole]
+    return tonumber(self.board[self:indexOfSide(side)][hole])
 end
 
 function Board:setSeeds(side, hole, seeds)
@@ -78,8 +78,8 @@ function Board:addSeeds(side, hole, seeds)
 end
 
 function Board:getSeedsOp(side, hole)
-    if (side == Side.NORTH) then return self.board[2][self.holes+1-hole]
-    else return self.board[1][self.holes+1-hole] end
+    if (side == Side.NORTH) then return tonumber(self.board[2][self.holes+1-hole])
+    else return tonumber(self.board[1][self.holes+1-hole]) end
 end
 
 function Board:setSeedsOp(side, hole, seeds)
@@ -94,7 +94,7 @@ function Board:addSeedsOp(side, hole, seeds)
 end
 
 function Board:getSeedsInStore(side)
-    return self.board[self:indexOfSide(side)][8]
+    return tonumber(self.board[self:indexOfSide(side)][8])
 end
 
 function Board:setSeedsInStore(side, seeds)
