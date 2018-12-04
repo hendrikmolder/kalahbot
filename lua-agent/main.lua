@@ -19,7 +19,8 @@ end
 
 function Main:sendMsg(msg)
     io.write(msg)
-    -- The critical piece of the puzzle - https://stackoverflow.com/questions/30669863/lua-flushing-input-buffer-during-interactive-terminal-session
+    -- The critical piece of the puzzle -
+    -- https://stackoverflow.com/questions/30669863/lua-flushing-input-buffer-during-interactive-terminal-session
     io.flush()
     log.info('Message sent:', msg)
 end
