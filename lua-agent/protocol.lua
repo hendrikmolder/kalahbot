@@ -93,15 +93,15 @@ function protocol.evaluateStateMsg(message, board)
         return nil
     end
 
-    for hole=0,board:getNoOfHoles() do
+    for hole=1,board:getNoOfHoles() do
         -- North holes
-        board:setSeeds(Side.NORTH, hole+1, boardParts[hole])
+        board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
-        board:setSeeds(Side.SOUTH, hole+1, boardParts[hole + board:getNoOfHoles() + 1])
+        board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
     end
 
     -- North store
-    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()])
+    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
     -- South store
     board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
     log.info('Board:\n', board:toString())
