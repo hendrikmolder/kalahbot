@@ -57,7 +57,6 @@ function Main:gameLoop()
             log.info("Turn:", pl.write(turn))
             local move = Move:new(nil, state.sideToMove, turn.move)
             log.info('State:', pl.write(state))
-            state:performMove(move)
             -- We don't really have to worry about moving for the opponent again, because everytime we get a state
             -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
             -- this
@@ -72,6 +71,8 @@ function Main:gameLoop()
                     end
                 end
             end
+
+            log.info("Board is now", state:getBoard():toString())
 
         elseif messageType == "end" then
             log.info('Received END command. Stopping.')
