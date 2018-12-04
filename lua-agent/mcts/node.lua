@@ -1,25 +1,44 @@
 -- Meta class
-Move = { side = nil, hole = nil }
+Node = { state = nil, parent = nil,  children = {} }
 
 -- class method new
-function Move:new (o, side, hole)
+function Node:new (o, state, parent, children)
     if hole < 1 then return nil end
 
     o = o or {}
     setmetatable(o, self)
-    self.__index    = self
-    self.side       = side or nil
-    self.hole       = hole or nil
+    self.__index     = self
+    self.state       = state or nil
+    self.parent      = parent or nil
+    self.children    = children or {}
 
     return o
 end
 
-function Move:getSide ()
-    return self.side
+-- Getters and setters
+
+function Node:setState(state)
+    self.state = state
 end
 
-function Move:getHole ()
-    return self.hole
+function Node:setParent(parent)
+    self.parent = parent
 end
 
-return Move
+function Node:addChildren(child)
+    table.insert(self.children, child)
+end
+
+function Node:getState()
+    return self.state
+end
+
+function Node:getParent()
+    return self.parent
+end
+
+function Node:getChildren()
+    return self.children
+end
+
+return Node

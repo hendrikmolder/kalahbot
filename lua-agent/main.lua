@@ -7,6 +7,7 @@ Move = require 'move'
 Kalah = require 'kalah'
 Side = require 'side'
 log = require 'utils.log'
+MCTS = require 'mcts.mcts'
 
 Main = {}
 
@@ -50,19 +51,20 @@ function Main:gameLoop()
                 state:setOurSide(Side.NORTH)
             end
 
-            log.info("Our side is: ", state:getOurSide())
-
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, state:getBoard())
-            log.info("Turn:", pl.write(turn))
-            log.info('State:', pl.write(state))
             -- We don't really have to worry about moving for the opponent again, because everytime we get a state
             -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
             -- this
             if not turn.endMove then
                 if turn.again then
                     log.info("Side to move is: ", state:getSideToMove())
-                    local makeMove = Move:new(nil, state:getSideToMove(), 4)
+
+                    local possibleMoves = MCTS.getMove(state)
+                    -- log.debug('Possible moves:', possibleMoves)
+                    local randomMove = math.random(1, #possibleMoves)
+                    local makeMove = possibleMoves[randomMove]
+                    -- local makeMove = Move:new(nil, state:getSideToMove(), 4)
                     if makeMove:getHole() == 1 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
@@ -78,7 +80,7 @@ function Main:gameLoop()
             break
         end
     end
-    log.info('gameLoop() stopped.')
+    log.info('Game loop stopped.')
 end
 
 log.info('Bot started.')

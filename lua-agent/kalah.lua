@@ -1,5 +1,7 @@
 Board = require 'board'
 Side = require 'side'
+Move = require 'move'
+local pl = require 'pl.pretty'
 
 -- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
 
@@ -59,6 +61,22 @@ end
 
 function Kalah:performMove(move)
     return self:makeMove(self:getBoard(), move)
+end
+
+function Kalah:getAllLegalMoves(board)
+    local legalMoves    = {}
+    local useBoard      = board or self.board
+    local noOfHoles     = useBoard:getNoOfHoles()
+    local side       = useBoard.sideToMove
+
+    for i=1,noOfHoles do
+        if (useBoard:getSeeds(side, i) ~= 0) then
+            move = Move:new(nil, side, i)
+            table.insert(legalMoves, move)
+        end
+    end
+
+    return legalMoves
 end
 
 -- Checks whether all holes are empty
