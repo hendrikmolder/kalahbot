@@ -110,8 +110,8 @@ function Board:toString()
     -- Loop over row
     for k,v in pairs(self.board) do
         for wells, _ in pairs(v) do
-            table.insert(s, tostring(self.board[k][wells] .. " "))
-            if (k == 2 and  wells == 1) then
+            table.insert(s, tostring(self.board[k][wells] .. "|"))
+            if (k == 1 and  wells == 8) then
                 table.insert(s, "\n")
             end
         end
