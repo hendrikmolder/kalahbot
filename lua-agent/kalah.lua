@@ -85,6 +85,7 @@ function Kalah:makeMove(board, move)
     -- Fetch board holes
     local holes = board:getNoOfHoles()
     local receivingPits = 2*holes + 1
+    -- Lua's lack of types gives back decimals if not using floor
     local rounds = math.floor(seedsToSow / receivingPits)
     local extra = seedsToSow % receivingPits
 
@@ -100,10 +101,11 @@ function Kalah:makeMove(board, move)
     local sowSide = move:getSide()
     local sowHole = move:getHole()
     for i=extra,1,-1 do
+        log.info("Board before seed update\n", board:toString())
         sowHole = sowHole + 1
         -- luacheck: ignore extra
         extra=i
-        if sowHole == 1 then
+        if sowHole == 8 then
             -- DONE implment side.lua
             sowSide = Side:getOpposite(sowSide)
         end
