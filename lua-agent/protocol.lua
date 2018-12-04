@@ -1,6 +1,8 @@
-local pl = require 'pl.stringx'
+require('pl.stringx').import()
 MoveTurn = require 'moveTurn'
 Board = require 'board'
+log = require 'utils.log'
+Side = require 'side'
 
 local protocol = {}
 
@@ -13,13 +15,21 @@ function protocol.getMessageType(message)
     -- Dont even ask
     local endString = "end"
 
-    if message == nil then return nil end
-    if message:sub(1, #startMsg) == startMsg then return "start" end
-    if message:sub(1, #changeMsg) == changeMsg then return "state" end
-    if message:sub(1, #endMsg) == endMsg then return endString end
+    if message == nil then
+        return nil
+    elseif message:sub(1, #startMsg) == startMsg then
+        log.info('Message type is START')
+        return "start"
+    elseif message:sub(1, #changeMsg) == changeMsg then
+        log.info('Message type is CHANGE')
+        return "state"
+    elseif message:sub(1, #endMsg) == endMsg then
+        log.info('Message type is END')
+        return endString
+    end
 
     -- Message was not recognized
-    print("Message was not recognised.")
+    log.error('Message type was not recognized:', message)
     return nil
 end
 
@@ -37,7 +47,10 @@ end
 -- Should be called when getMessageType returns START
 function protocol.evaluateStartMsg(message)
     -- Check if the message has a valid ending character
-    if message:sub(#message, #message) ~= "\n" then return nil end
+    if message:sub(#message, #message) ~= "\n" then
+        log.error('Expected last character to be \"/n\", received:', message:sub(#message, #message))
+        return nil
+    end
 
     -- Indexing starts at 1, hence we use 7 not 6
     local position = message:sub(7, #message - 1)
@@ -46,7 +59,7 @@ function protocol.evaluateStartMsg(message)
     elseif position == "North" then
         return false
     else
-        print("Illegal position paramter: " .. position)
+        log.error('Illegal position parameter:', position)
         return nil
     end
 end
@@ -56,7 +69,7 @@ function protocol.evaluateStateMsg(message, board)
     if message:sub(#message, #message) ~= "\n" then return nil end
 
     local moveTurn = MoveTurn:new(nil)
-    local msgParts = pl.split(message, ";", 4)
+    local msgParts = message:split(";", 4)
 
     -- If message does not have 4 parts, it is missing arguments
     if #msgParts ~= 4 then return nil end
@@ -68,28 +81,30 @@ function protocol.evaluateStateMsg(message, board)
     if msgParts[2] == "SWAP" then
         moveTurn.move = -1
     else
-        moveTurn.move = msgParts[2]
+        moveTurn.move = tonumber(msgParts[2])
     end
 
     -- msgparts[3] -- the board
-    local boardParts = pl.split(msgParts[3], ",")
+    local boardParts = msgParts[3]:split(",")
 
-    if 2 * board:getNoOfHoles() + 1 ~= #boardParts then
-        print("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
+    if (2 * (board:getNoOfHoles() + 1) ~= #boardParts) then
+        log.error("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
+        log.info('Board holes received:', boardParts)
         return nil
     end
 
     for hole=1,board:getNoOfHoles() do
         -- North holes
-        board:setSeeds("NORTH", hole+1, boardParts[hole])
+        board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
-        board:setSeeds("SOUTH", hole+1, boardParts[hole + board:getNoOfHoles() + 1])
+        board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
     end
 
     -- North store
-    board:setSeedsInStore("NORTH", boardParts[board:getNoOfHoles()])
+    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
     -- South store
-    board:setSeedsInStore("SOUTH", boardParts[2 * board:getNoOfHoles() + 1])
+    board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
+    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
@@ -101,7 +116,7 @@ function protocol.evaluateStateMsg(message, board)
         moveTurn.endMove = true
         moveTurn.again = false
     else
-        print("Illegal value for turn parameter " .. msgParts[4])
+        log.error("Illegal value for turn parameter " .. msgParts[4])
         return nil
     end
 

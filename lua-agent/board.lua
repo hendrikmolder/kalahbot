@@ -9,13 +9,15 @@
 -- Create a board object with default values
 -- board variable is instantiated as a table / matrix,
 -- we shall add the rows later
-Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0}
+Side = require 'side'
+
+Board = {NORTH_ROW = 1, SOUTH_ROW = 2, holes=1, seeds=0, board={}}
 
 Board.__index = Board
 
 function Board:indexOfSide(side)
-    -- Not sure if we should be using a string here
-    if (side == "NORTH") then
+    -- DONE Not sure if we should be using a string here
+    if (side == Side.NORTH) then
         return self.NORTH_ROW
     else
         return self.SOUTH_ROW
@@ -23,9 +25,9 @@ function Board:indexOfSide(side)
 end
 
 -- Board can be created with or without specifying any of the parameters
-function Board:new(holes, seeds)
-
-    local o = {}
+function Board:new(o, holes, seeds)
+    --luacheck: ignore o
+    local o = o or {}
     setmetatable(o, self)
     self.__index = self
     self.holes = holes or 1
@@ -60,11 +62,11 @@ function Board:copyBoard(obj)
 end
 
 function Board:getNoOfHoles()
-    return self.holes
+    return tonumber(self.holes)
 end
 
 function Board:getSeeds(side, hole)
-    return self.board[self:indexOfSide(side)][hole]
+    return tonumber(self.board[self:indexOfSide(side)][hole])
 end
 
 function Board:setSeeds(side, hole, seeds)
@@ -76,23 +78,23 @@ function Board:addSeeds(side, hole, seeds)
 end
 
 function Board:getSeedsOp(side, hole)
-    if (side == "NORTH") then return self.board[2][self.holes+1-hole]
-    else return self.board[1][self.holes+1-hole] end
+    if (side == Side.NORTH) then return tonumber(self.board[2][self.holes+1-hole])
+    else return tonumber(self.board[1][self.holes+1-hole]) end
 end
 
 function Board:setSeedsOp(side, hole, seeds)
-    if (side == "NORTH") then self.board[2][self.holes+1-hole] = seeds
+    if (side == Side.NORTH) then self.board[2][self.holes+1-hole] = seeds
     else self.board[1][self.holes+1-hole] = seeds end
 end
 
 -- TODO this function's logic seems a bit dodgy to me, hopefully tests catch it if it is
 function Board:addSeedsOp(side, hole, seeds)
-    if (side == "NORTH") then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
+    if (side == Side.NORTH) then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
     else self.board[1][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds end
 end
 
 function Board:getSeedsInStore(side)
-    return self.board[self:indexOfSide(side)][8]
+    return tonumber(self.board[self:indexOfSide(side)][8])
 end
 
 function Board:setSeedsInStore(side, seeds)
@@ -100,19 +102,22 @@ function Board:setSeedsInStore(side, seeds)
 end
 
 function Board:addSeedsToStore(side, seeds)
-    self.board[self:indexOfSide(side)][8] = self:getSeeds(side, 8) + seeds
+    self.board[self:indexOfSide(side)][8] = self:getSeedsInStore(side) + seeds
 end
 
 function Board:toString()
+    local s = {}
     -- Loop over row
     for k,v in pairs(self.board) do
         for wells, _ in pairs(v) do
-            io.write(self.board[k][wells] .. " | ")
+            table.insert(s, tostring(self.board[k][wells] .. "|"))
             if (k == 1 and  wells == 8) then
-                io.write("\n")
+                table.insert(s, "\n")
             end
         end
     end
+
+    return table.concat(s)
 end
 
 return Board

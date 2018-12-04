@@ -8,7 +8,7 @@ function MoveTurn:new (o)
     self.__index    = self
     self.endMove    = false
     self.again      = false
-    self.endMove    = nil
+    self.move   = nil
 
     return o
 end
