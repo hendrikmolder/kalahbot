@@ -16,6 +16,8 @@ The runnable file is `main.lua`. To run the bot, just run that file using `lua m
 
 You must be inside `lua-agent` directory.
 
+**NB! Very important:** If you're on a machine without Luarocks, use the latest release and run with `lua -l utils.init main.lua`. `utils.init` package will ensure that the depencenies are used from `lib` directory inside the build.
+
 #### Running agains given clients
 
 The given client must be inside the `lua-agent` directory. For example, to play against `MKRefAgent` use
