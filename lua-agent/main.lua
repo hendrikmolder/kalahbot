@@ -19,6 +19,8 @@ end
 
 function Main:sendMsg(msg)
     io.write(msg)
+    -- The critical piece of the puzzle - https://stackoverflow.com/questions/30669863/lua-flushing-input-buffer-during-interactive-terminal-session
+    io.flush()
     log.info('Message sent:', msg)
 end
 
@@ -34,36 +36,35 @@ end
 function Main:gameLoop()
     log.info('Game loop started.')
 --    local board = Board:new(nil, 7,7)
-    log.debug(pl.write(board))
     local state = Kalah:new()
-
-    log.info('State board set to:', state:getBoard():toString())
-
     while true do
         local msg = Main:readMsg()
         local messageType = protocol.getMessageType(msg)
         if messageType == "start" then
             local isFirst = protocol.evaluateStartMsg(msg)
             if (isFirst) then
-                local move = Move:new(nil, Side.NORTH, 2) -- TODO FIND MOVE
+                local move = Move:new(nil, state:getSideToMove(), 2) -- TODO FIND MOVE
                 Main:sendMsg(protocol.createMoveMsg(move.hole))
             else
                 state:setOurSide(Side.NORTH)
             end
 
+            log.info("Our side is: ", state:getOurSide())
+
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, state:getBoard())
             log.info("Turn:", pl.write(turn))
-
             local move = Move:new(nil, state.sideToMove, turn.move)
-            log.debug('State:', pl.write(state))
-            log.info("Move in main: ", pl.write(move))
-
+            log.info('State:', pl.write(state))
             state:performMove(move)
+            -- We don't really have to worry about moving for the opponent again, because everytime we get a state
+            -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
+            -- this
             if not turn.endMove then
                 if turn.again then
-                    local makeMove = Move:new(nil, Side.NORTH, 1)
-                    if makeMove.hole == 0 then
+                    log.info("Side to move is: ", state:getSideToMove())
+                    local makeMove = Move:new(nil, state:getSideToMove(), 4)
+                    if makeMove:getHole() == 1 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
                         Main:sendMsg(protocol.createMoveMsg(makeMove.hole))
