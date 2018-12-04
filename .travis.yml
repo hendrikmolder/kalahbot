@@ -21,7 +21,7 @@ before_deploy:
 - luarocks install --tree lib $(ls -- rockspecs/kalahbot-1.0-*.rockspec | sort -r | head -1) --only-deps
 - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y-%m-%d')-$(git log --format=%h -1)}
 - git tag $TRAVIS_TAG
-- tar czvpf kalahbot-$TRAVIS_TAG.tar.gz --exclude='./logs/*.log' --exclude='*.tar.gz' --exclude='*.out' --exclude='*.jar' --exclude='./spec'.
+- tar czvpf kalahbot-$TRAVIS_TAG.tar.gz --exclude='./logs/*.log' --exclude='*.tar.gz' --exclude='*.out' --exclude='*.jar' --exclude='./spec' .
 deploy:
   provider: releases
   draft: true
