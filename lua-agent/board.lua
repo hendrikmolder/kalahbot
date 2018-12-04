@@ -102,7 +102,7 @@ function Board:setSeedsInStore(side, seeds)
 end
 
 function Board:addSeedsToStore(side, seeds)
-    self.board[self:indexOfSide(side)][8] = self:getSeeds(side, 8) + seeds
+    self.board[self:indexOfSide(side)][8] = self:getSeedsInStore(side) + seeds
 end
 
 function Board:toString()
