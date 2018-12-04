@@ -55,7 +55,6 @@ function Main:gameLoop()
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, state:getBoard())
             log.info("Turn:", pl.write(turn))
-            local move = Move:new(nil, state.sideToMove, turn.move)
             log.info('State:', pl.write(state))
             -- We don't really have to worry about moving for the opponent again, because everytime we get a state
             -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
