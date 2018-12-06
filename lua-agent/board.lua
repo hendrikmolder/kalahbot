@@ -120,4 +120,16 @@ function Board:toString()
     return table.concat(s)
 end
 
+function Board:toShortString()
+    local s = {}
+    -- Loop over row
+    for k,v in pairs(self.board) do
+        for wells, _ in pairs(v) do
+            table.insert(s, tostring(self.board[k][wells] .. ","))
+        end
+    end
+
+    return table.concat(s)
+end
+
 return Board
