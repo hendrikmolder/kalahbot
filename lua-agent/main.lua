@@ -59,16 +59,16 @@ function Main:gameLoop()
             if not turn.endMove then
                 if turn.again then
                     log.info("Side to move is: ", state:getSideToMove())
-
+                    MCTS.playRandomMove(state)
                     local possibleMoves = MCTS.getMove(state)
                     -- log.debug('Possible moves:', possibleMoves)
                     local randomMove = math.random(1, #possibleMoves)
-                    local makeMove = possibleMoves[randomMove]
-                    -- local makeMove = Move:new(nil, state:getSideToMove(), 4)
-                    if makeMove:getHole() == 1 then
+                    local selectedMove = possibleMoves[randomMove]
+                    local makeMove = Move:new(nil, state:getSideToMove(), 4)
+                    if selectedMove:getHole() == 1 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
-                        Main:sendMsg(protocol.createMoveMsg(makeMove.hole))
+                        Main:sendMsg(protocol.createMoveMsg(selectedMove.hole))
                     end
                 end
             end
