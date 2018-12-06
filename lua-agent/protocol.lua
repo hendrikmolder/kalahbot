@@ -64,6 +64,20 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
+function protocol.createChangeMsg(move, board)
+    log.info('createChangeMsg called')
+    local boardString = board:getShortString()
+    local moveHole = move:getHole()
+    local change = 'CHANGE;'
+    local turns = {
+        you = ';YOU',
+        opp = ';OPP',
+        endTurn = ';END'
+    }
+    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
+    return change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n'
+end
+
 function protocol.evaluateStateMsg(message, board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
