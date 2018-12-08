@@ -7,10 +7,10 @@ local t = require 'pl.tablex'
 
 local log = require '..utils.log'
 local protocol = require '..protocol'
-local State = require '..state'
-local Tree = require 'tree'
-local Node = require 'node'
-local UCT = require 'uct'
+local State = require '..kalah'
+local Tree = require 'mcts.tree'
+local Node = require 'mcts.node'
+local UCT = require 'mcts.uct'
 
 MCTS = {}
 
@@ -80,6 +80,10 @@ function MCTS.selectPromisingNode(rootNode)
         node = UCT.findBestNodeWithUCT(node)
     end
     return node
+end
+
+function MCTS.expandNode(node)
+
 end
 
 

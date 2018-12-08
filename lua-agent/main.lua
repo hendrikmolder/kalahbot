@@ -37,6 +37,14 @@ end
 
 function Main:gameLoop()
     log.info('Game loop started.')
+
+    -- Run random seed for random numbers
+    math.randomseed(os.time())
+    math.random()
+    math.random()
+    math.random()
+    --  END of random popping
+
 --    local board = Board:new(nil, 7,7)
     local state = Kalah:new()
     while true do
@@ -58,14 +66,15 @@ function Main:gameLoop()
             -- this
             if not turn.endMove then
                 if turn.again then
-                    log.info("Side to move is: ", state:getSideToMove())
-                    MCTS.playRandomMove(state)
+                    -- log.info("Side to move is: ", state:getSideToMove())
+                    -- MCTS.playRandomMove(state)
                     local possibleMoves = MCTS.getMove(state)
                     -- log.debug('Possible moves:', possibleMoves)
                     local randomMove = math.random(1, #possibleMoves)
+                    log.debug('Rand:', randomMove, 'Size of legal mov:', #possibleMoves)
                     local selectedMove = possibleMoves[randomMove]
-                    local makeMove = Move:new(nil, state:getSideToMove(), 4)
-                    if selectedMove:getHole() == 1 then
+                    log.debug('Random move:', selectedMove:toString())
+                    if selectedMove:getHole() == 0 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
                         Main:sendMsg(protocol.createMoveMsg(selectedMove.hole))
@@ -73,7 +82,7 @@ function Main:gameLoop()
                 end
             end
 
-            log.info("Board is now", state:getBoard():toString())
+            log.info("Board is now\n" .. state:getBoard():toString())
 
         elseif messageType == "end" then
             log.info('Received END command. Stopping.')

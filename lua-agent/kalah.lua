@@ -2,6 +2,7 @@ Board = require 'board'
 Side = require 'side'
 Move = require 'move'
 local pl = require 'pl.pretty'
+local log = require 'utils.log'
 
 -- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
 
@@ -67,11 +68,11 @@ function Kalah:getAllLegalMoves(board)
     local legalMoves    = {}
     local useBoard      = board or self.board
     local noOfHoles     = useBoard:getNoOfHoles()
-    local side       = useBoard.sideToMove
+    local side          = self.sideToMove
 
     for i=1,noOfHoles do
         if (useBoard:getSeeds(side, i) ~= 0) then
-            move = Move:new(nil, side, i)
+            move = Move:new(nil, side, i-1)
             table.insert(legalMoves, move)
         end
     end

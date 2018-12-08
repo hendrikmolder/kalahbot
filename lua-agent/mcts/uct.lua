@@ -9,7 +9,11 @@ function UCT.uctValue(totalVisit, nodeWinScore, nodevisit)
 end
 
 function UCT.findBestNodeWithUCT(node)
+    local parentVisit = node:getState():evaluate() --TODO
 
+    -- TODO convert this code
+    -- Comparator.comparing(c -> uctValue(parentVisit,
+    --         c.getState().getWinScore(), c.getState().getVisitCount())));
 end
 
 return UCT
