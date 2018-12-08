@@ -66,7 +66,8 @@ function Main:gameLoop()
             -- this
             if not turn.endMove then
                 if turn.again then
-                    -- log.info("Side to move is: ", state:getSideToMove())
+                    state:setSideToMove(state:getOurSide())
+                    log.info("Side to move is: ", state:getSideToMove())
                     -- MCTS.playRandomMove(state)
                     local possibleMoves = MCTS.getMove(state)
                     -- log.debug('Possible moves:', possibleMoves)
@@ -79,6 +80,8 @@ function Main:gameLoop()
                     else
                         Main:sendMsg(protocol.createMoveMsg(selectedMove.hole))
                     end
+                else
+                    state:setSideToMove(Side:getOpposite(state:getOurSide()))
                 end
             end
 

@@ -70,9 +70,10 @@ function Kalah:getAllLegalMoves(board)
     local noOfHoles     = useBoard:getNoOfHoles()
     local side          = self.sideToMove
 
+    log.debug("Board to search for legal moves", useBoard:toString())
     for i=1,noOfHoles do
         if (useBoard:getSeeds(side, i) ~= 0) then
-            move = Move:new(nil, side, i-1)
+            local move = Move:new(nil, side, i)
             table.insert(legalMoves, move)
         end
     end
