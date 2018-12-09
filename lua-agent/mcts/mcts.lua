@@ -24,6 +24,7 @@ MCTS.__index = MCTS
 
 -- TODO Remove other data structure based MCTS
 
+-- Initialise the search algorithm
 function MCTS:init(state, calculationTime, maxMoves)
     local o = {}
     setmetatable(o, self)
@@ -41,6 +42,7 @@ function MCTS:update(state)
     table.insert(self.states, state)
 end
 
+-- This returns the best move from a given state
 function MCTS:getMove()
     local calculationStartTime = os.time()
     local legalMoves = self.state:getAllLegalMoves()
@@ -63,7 +65,7 @@ function MCTS:getMove()
         (p, self.board.next_state(state, p)) for p in legal
             create a list of state action pairs from all possible legal moves
 
-        TODO Lua Equivalent would be a table with the key being the move and the
+        DONE Lua Equivalent would be a table with the key being the move and the
         Value being the resultant state
     --]]
 
@@ -84,14 +86,13 @@ function MCTS:getMove()
             if turn.again then
                 newState:setSideToMove(ourSide)
             else
-                newState:setSideToMove(ourSide:getOpposite())
+                newState:setSideToMove(Side:getOpposite(ourSide))
             end
         end
 
         -- Add the updated state to the table
         possibleStates[legalMoves[z]:getHole()] = newState
     end
-
 
     --[[
          percent_wins, move = max(
@@ -108,9 +109,13 @@ function MCTS:getMove()
         this would get us the next state but we still need to know the move that gets us there and
         am not sure we have a way to do that yet
     --]]
+
+
     return state:getAllLegalMoves()
 end
 
+-- This does a random playout from a given state to build the game tree
+-- so that the getMove() function can use it to pick the best move using UCB
 function MCTS:runSimulation()
     -- Copy the state to allow for simulations
     local stateCopy = t.deepcopy(self.state)
@@ -147,10 +152,10 @@ function MCTS:runSimulation()
         self.states[stateCopy:toString()] = true
 
         -- Transposition table of sorts
-        if expand and self.plays[statesCopy:toString()] == nil then
+        if expand and self.plays[stateCopy:toString()] == nil then
             expand = false
-            self.plays[statesCopy:toString()] = 0
-            self.wins[statesCopy:toString()] = 0
+            self.plays[stateCopy:toString()] = 0
+            self.wins[stateCopy:toString()] = 0
         end
 
         -- Add to set of visited states (It's a set, trust me)
@@ -176,19 +181,6 @@ function MCTS:runSimulation()
             end
         end
     end
-
-
-
-
-
-
-    -- if makeMove:getHole() == 1 then
-    --     Main:sendMsg(protocol.createSwapMsg())
-    -- else
-    --     Main:sendMsg(protocol.createMoveMsg(makeMove.hole))
-    -- end
-    log.info('[MCTS] Played a random move: ', randomMove:getHole())
-    return stateCopy
 end
 
 function MCTS.mcts()
