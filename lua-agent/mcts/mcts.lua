@@ -1,11 +1,16 @@
---
---  REFERENCES
---  1. https://www.baeldung.com/java-monte-carlo-tree-search
---
-require('pl.stringx').import()
+--[[
+    References used for MCTS implementation:
 
+    1. https://www.baeldung.com/java-monte-carlo-tree-search
+    2. https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
+
+--]]
+
+-- External imports:
+require('pl.stringx').import()
 local t = require 'pl.tablex'
 
+-- Internal imports:
 local log = require '..utils.log'
 local protocol = require '..protocol'
 local State = require '..kalah'
@@ -16,10 +21,6 @@ local UCT = require 'mcts.uct'
 
 MCTS = {}
 MCTS.__index = MCTS
-
-log.info('MCTS started. Import working.')
-
--- MCTS implementation based on https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
 
 -- TODO Remove other data structure based MCTS
 
@@ -34,9 +35,6 @@ function MCTS:init(state, calculationTime, maxMoves)
     self.wins = {}
     self.calculationTime = tonumber(calculationTime) or 30
     self.maxMoves = tonumber(maxMoves) or 50
-    -- Track plays from current state
-    self.plays = {}
-    self.wins = {}
 end
 
 function MCTS:update(state)
