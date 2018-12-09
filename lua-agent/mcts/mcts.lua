@@ -27,10 +27,11 @@ function MCTS:init(state, calculationTime, maxMoves)
     local o = {}
     setmetatable(o, self)
     self.__index    = self
-    -- The state to start MCTS from
-    self.state = state
-    -- Table to hold game states and statistics on them
-    self.states = {}
+
+    self.state = state      -- The state to start MCTS from
+    self.states = {}        -- Table to hold game states and statistics on them
+    self.plays = {}         -- Track plays from current state
+    self.wins = {}
     self.calculationTime = tonumber(calculationTime) or 30
     self.maxMoves = tonumber(maxMoves) or 50
     -- Track plays from current state
