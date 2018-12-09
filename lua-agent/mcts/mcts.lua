@@ -8,6 +8,7 @@ local t = require 'pl.tablex'
 local log = require '..utils.log'
 local protocol = require '..protocol'
 local State = require '..kalah'
+local Side = require '..side'
 local Tree = require 'mcts.tree'
 local Node = require 'mcts.node'
 local UCT = require 'mcts.uct'
@@ -85,6 +86,31 @@ end
 function MCTS.expandNode(node)
 
 end
+
+function MCTS:evaluateStateUsingHeuristic(state)
+    -- Evaluation heuristic taken from:
+    -- 1) https://blog.hackerrank.com/mancala/
+    -- 2) (TODO create citation) http://jabaier.sitios.ing.uc.cl/iic2622/kalah.pdf
+    local ourSide = state:getOurSide
+    local oppositeSide = Side:getOpposite(ourSide)
+
+    local seedsInOurStore = state:getBoard():getSeedsInStore(ourSide)
+    local seedsInOppStore = state:getBoard():getSeedsInStore(oppositeSide)
+
+    local ourTotalSeeds = 0
+    local oppTotalSeeds = 0
+
+    for hole=1,7 do
+        ourTotalSeeds = ourTotalSeeds + state:getBoard():getSeeds(ourSide, hole)
+        oppTotalSeeds = oppTotalSeeds + state:getBoard():getSeeds(ourSide, hole)
+    end
+
+    return ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
+end
+
+
+-- Move ordering heuristic to guide exploration
+function MCTS:orderMovesUsingHeuristic(allLegalMoves) end
 
 
 
