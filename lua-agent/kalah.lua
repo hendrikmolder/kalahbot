@@ -52,7 +52,6 @@ end
 
 -- Given a board state, returns true if there is a winner else false
 function Kalah:getWinner()
-
     local finishedSide
 
     if self:holesEmpty(self.board, Side.NORTH) then finishedSide = Side.NORTH else finishedSide = Side.SOUTH end
@@ -96,7 +95,7 @@ function Kalah:getAllLegalMoves(board)
     local noOfHoles     = useBoard:getNoOfHoles()
     local side          = self.sideToMove
 
-    log.debug("Board to search for legal moves", useBoard:toString())
+    -- log.debug("Board to search for legal moves", useBoard:toString())
     for i=1,noOfHoles do
         if (useBoard:getSeeds(side, i) ~= 0) then
             local move = Move:new(nil, side, i)
@@ -137,8 +136,8 @@ function Kalah:makeMove(board, move)
 
     if (rounds ~= 0) then
         for hole=1,board:getNoOfHoles() do
-            board:addSeeds("NORTH", hole, rounds)
-            board:addSeeds("SOUTH", hole, rounds)
+            board:addSeeds(Side.NORTH, hole, rounds)
+            board:addSeeds(Side.SOUTH, hole, rounds)
         end
 
         board:addSeedsToStore(move:getSide(), rounds);
@@ -146,13 +145,12 @@ function Kalah:makeMove(board, move)
 
     local sowSide = move:getSide()
     local sowHole = move:getHole()
+    -- log.info("Board before seed update\n", board:toShortString())
     for i=extra,1,-1 do
-        log.info("Board before seed update\n", board:toString())
         sowHole = sowHole + 1
         -- luacheck: ignore extra
         extra=i
         if sowHole == 8 then
-            -- DONE implment side.lua
             sowSide = Side:getOpposite(sowSide)
         end
         -- We now add seeds to the store
@@ -180,7 +178,7 @@ function Kalah:makeMove(board, move)
         board:addSeedsToStore(move:getSide(), 1+board:getSeedsOp(move:getSide(), sowHole))
         board:setSeeds(move:getSide(), sowHole, 0)
         board:setSeedsOp(move:getSide(), sowHole, 0)
-        log.info("board is now\n", board:toString())
+        log.info("Board is now\n", board:toShortString())
     end
 
     local finishedSide
@@ -208,7 +206,7 @@ function Kalah:makeMove(board, move)
     if (sowHole == 0) then
         return move:getSide()
     else
-        log.info('Returning side:', move:getSide())
+        -- log.info('Returning side:', move:getSide())
         return Side:getOpposite(move:getSide())
     end
 end
