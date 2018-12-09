@@ -87,7 +87,7 @@ function Board:setSeedsOp(side, hole, seeds)
     else self.board[1][self.holes+1-hole] = seeds end
 end
 
--- TODO this function's logic seems a bit dodgy to me, hopefully tests catch it if it is
+-- DONE this function's logic seems a bit dodgy to me, hopefully tests catch it if it is
 function Board:addSeedsOp(side, hole, seeds)
     if (side == Side.NORTH) then self.board[2][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds
     else self.board[1][self.holes+1-hole] = self:getSeedsOp(side, hole) + seeds end
