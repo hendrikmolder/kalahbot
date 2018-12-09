@@ -57,6 +57,13 @@ function Main:gameLoop()
                 Main:sendMsg(protocol.createMoveMsg(move.hole))
             else
                 state:setOurSide(Side.NORTH)
+
+                -- Pie Rule - Random swap
+                local pieRuleRandom = math.random(1, 100)
+                if pieRuleRandom % 2 == 0 then -- Send a SWAP message
+                    state:setOurSide(Side.SOUTH)
+                    Main:sendMsg(protocol.createSwapMsg())
+                end
             end
 
         elseif messageType == "state" then
@@ -77,11 +84,11 @@ function Main:gameLoop()
                     -- log.debug('Rand:', randomMove, 'Size of legal mov:', #possibleMoves)
                     -- local selectedMove = possibleMoves[randomMove]
                     -- log.debug('Random move:', selectedMove:toString())
-                    if mctsMove == 0 then
-                        Main:sendMsg(protocol.createSwapMsg())
-                    else
-                        Main:sendMsg(protocol.createMoveMsg(mctsMove))
-                    end
+                    -- if mctsMove == 0 then
+                    --     Main:sendMsg(protocol.createSwapMsg())
+                    -- else
+                    Main:sendMsg(protocol.createMoveMsg(mctsMove))
+                    -- end
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))
                 end
