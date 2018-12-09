@@ -70,16 +70,17 @@ function Main:gameLoop()
                     log.info("Side to move is: ", state:getSideToMove())
                     -- MCTS.playRandomMove(state)
                     MCTS:init(state, 25, 5)
-                    local possibleMoves = MCTS:getMove()
+                    local mctsMove = MCTS:getMove()
+                    log.info("MCTS Suggested Move", mctsMove)
                     -- log.debug('Possible moves:', possibleMoves)
-                    local randomMove = math.random(1, #possibleMoves)
-                    log.debug('Rand:', randomMove, 'Size of legal mov:', #possibleMoves)
-                    local selectedMove = possibleMoves[randomMove]
-                    log.debug('Random move:', selectedMove:toString())
-                    if selectedMove:getHole() == 0 then
+                    -- local randomMove = math.random(1, #possibleMoves)
+                    -- log.debug('Rand:', randomMove, 'Size of legal mov:', #possibleMoves)
+                    -- local selectedMove = possibleMoves[randomMove]
+                    -- log.debug('Random move:', selectedMove:toString())
+                    if mctsMove == 0 then
                         Main:sendMsg(protocol.createSwapMsg())
                     else
-                        Main:sendMsg(protocol.createMoveMsg(selectedMove.hole))
+                        Main:sendMsg(protocol.createMoveMsg(mctsMove))
                     end
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))
