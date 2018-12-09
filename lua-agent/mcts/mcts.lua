@@ -47,10 +47,10 @@ function MCTS:getMove()
     local sideToPlay = self.state:getSideToMove()
 
     if (#legalMoves == 0) then
-        return
+        return                      -- Return if no legal moves available
     elseif (#legalMoves == 1) then
-        return legalMoves[1]
-    end
+        return legalMoves[1]        -- If only one move available, return that
+    end                             -- Else continue with selecting the move
 
     local games = 0
 
