@@ -102,7 +102,7 @@ function MCTS:getMove()
             for p, S in moves_states
         )
 
-        TODO calculate wins percentage and plays percentage by "getting" the value of "state" with "player" to
+        DONE calculate wins percentage and plays percentage by "getting" the value of "state" with "player" to
         play for all next move_states. This returns a tuple consisting of the play and the win percentage of
         that play. The Lua equivalent would be
         to compute the max using state references into the wins and plays table,
@@ -147,6 +147,8 @@ function MCTS:runSimulation()
 
     local winner
 
+    local oldState
+
     for moves=1,self.maxMoves do
         local legalMoves = stateCopy:getAllLegalMoves()
         -- Select a random legal move to make
@@ -155,10 +157,16 @@ function MCTS:runSimulation()
 
         -- Create the state change message
         local randomChangeMSg = protocol.createChangeMsg(randomMove, stateCopy:getBoard())
-
+        oldState = stateCopy:getBoard():toString()
         -- Play that random move AND update the board
         -- TODO update protocol to update all of state and not just board so we know whose turn is it
         local turn = protocol.evaluateStateMsg(randomChangeMSg, stateCopy:getBoard())
+        local currentState = stateCopy:getBoard():toString()
+
+        if (currentState == oldState) then
+            log.error("STATE NOT UPDATED")
+        end
+
         if not turn.endMove then
             if turn.again then
                 stateCopy:setSideToMove(ourSide)
@@ -179,7 +187,11 @@ function MCTS:runSimulation()
         -- Add to set of visited states (It's a set, trust me)
         visited_states[stateCopy:toString()] = true
 
-        winner = stateCopy:getWinner()
+        -- Get a winner only if the holes have emptied
+        if (stateCopy:holesEmpty(stateCopy:getBoard(), Side.NORTH)
+                or stateCopy:holesEmpty(stateCopy:getBoard(), Side.SOUTH)) then
+            winner = stateCopy:getWinner()
+        end
 
         -- If a winner is found, end simulation to start back prop (?)
         if winner ~= nil then

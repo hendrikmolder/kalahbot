@@ -78,6 +78,7 @@ function protocol.createChangeMsg(move, board)
 end
 
 function protocol.evaluateStateMsg(message, board)
+    log.info("BOARD RECEIVED", board:toString(), board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -111,6 +112,7 @@ function protocol.evaluateStateMsg(message, board)
         board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
         board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
+        log.debug("Updating board\n", board:toString())
     end
 
     -- North store
@@ -132,6 +134,8 @@ function protocol.evaluateStateMsg(message, board)
         log.error("Illegal value for turn parameter " .. msgParts[4])
         return nil
     end
+
+    log.debug("Function completed. Returning moveTurn.")
 
     return moveTurn
 end
