@@ -14,14 +14,36 @@ local Node = require 'mcts.node'
 local UCT = require 'mcts.uct'
 
 MCTS = {}
+MCTS.__index = MCTS
 
 log.info('MCTS started. Import working.')
 
-function MCTS.getMove(state)
+-- MCTS implementation based on https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
+
+function MCTS:init(state, calculationTime, maxMoves)
+    local o = {}
+    setmetatable(o, self)
+    self.__index    = self
+    -- The state to start MCTS from
+    self.state = state
+    -- Table to hold game states and statistics on them
+    self.states = {}
+    self.calculationTime = tonumber(calculationTime) or 30
+    self.maxMoves = tonumber(maxMoves) or 50
+end
+
+function MCTS:update(state)
+    table.insert(self.states, state)
+end
+
+function MCTS:getMove()
+    local calculationStartTime = os.time()
+    while os.time() - calculationStartTime < self.calculationTime do
+        self:runSimulation()
     return state:getAllLegalMoves()
 end
 
-function MCTS.playRandomMove(state)
+function MCTS:runSimulation()
     local stateCopy = t.deepcopy(state)
     local legalMoves = stateCopy:getAllLegalMoves()
     local randomIndex = math.random(1, #legalMoves)
@@ -107,10 +129,6 @@ function MCTS:evaluateStateUsingHeuristic(state)
 
     return ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
 end
-
-
--- Move ordering heuristic to guide exploration
-function MCTS:orderMovesUsingHeuristic(allLegalMoves) end
 
 
 
