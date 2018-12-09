@@ -50,7 +50,7 @@ function MCTS:getMove()
 
     if (#legalMoves == 0) then
         return
-    elseif (#legalMoves == 0) then
+    elseif (#legalMoves == 1) then
         return legalMoves[1]
     end
 
