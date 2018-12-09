@@ -58,7 +58,7 @@ function MCTS:getMove()
     while os.time() - calculationStartTime < self.calculationTime do
         self:runSimulation()
         games = games + 1
-
+    end
     -- [(p, self.board.next_state(state, p)) for p in legal]
     -- create a list of state action pairs from all possible legal moves
     -- [[ TODO Lua Equivalent would be a table with the key being the move and the
