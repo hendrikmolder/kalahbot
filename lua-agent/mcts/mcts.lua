@@ -110,8 +110,26 @@ function MCTS:getMove()
         am not sure we have a way to do that yet
     --]]
 
+    local maxWinPercentage = 0
+    local bestHole
 
-    return state:getAllLegalMoves()
+    for k,v in ipairs(possibleStates) do
+        -- Retrieve the number of wins by using the state's string representation to index into
+        -- the wins table
+        local wins = self.wins[v:toString()] or 0
+        -- Retrieve the number of plays by using the staten's string representation to index into
+        -- the plays table
+        local plays = self.plays[v:toString()] or 1
+
+        local winRate = wins/plays
+
+        if (maxWinPercentage < winRate) then
+            maxWinPercentage = winRate
+            bestHole = k
+        end
+    end
+
+    return bestHole
 end
 
 -- This does a random playout from a given state to build the game tree
