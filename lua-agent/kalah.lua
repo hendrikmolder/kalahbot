@@ -55,7 +55,7 @@ function Kalah:getWinner()
 
     local finishedSide
 
-    if self:holes_empty(self.board, Side.NORTH) then finishedSide = Side.NORTH else finishedSide = Side.SOUTH end
+    if self:holesEmpty(self.board, Side.NORTH) then finishedSide = Side.NORTH else finishedSide = Side.SOUTH end
 
     local otherSide = Side:getOpposite(finishedSide)
     local otherSideSeeds = self.board:getSeedsInStore(otherSide)
@@ -64,7 +64,7 @@ function Kalah:getWinner()
         otherSideSeeds = otherSideSeeds + self.board:getSeeds(otherSide, hole)
     end
 
-    local finishedSideSeeds = self.board:getSeeds(finishedSide)
+    local finishedSideSeeds = self.board:getSeedsInStore(finishedSide)
 
     if finishedSideSeeds > otherSideSeeds then
         return finishedSide
