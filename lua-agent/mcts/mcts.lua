@@ -112,7 +112,7 @@ function MCTS:getMove()
 
     local maxWinPercentage = 0
     local bestHole
-
+    log.info('possibleStates = ', #possibleStates)
     for k,v in ipairs(possibleStates) do
         -- Retrieve the number of wins by using the state's string representation to index into
         -- the wins table
@@ -122,7 +122,7 @@ function MCTS:getMove()
         local plays = self.plays[v:toString()] or 1
 
         local winRate = wins/plays
-
+        log.info('win rate:', winRate)
         if (maxWinPercentage < winRate) then
             maxWinPercentage = winRate
             bestHole = k
@@ -142,29 +142,31 @@ function MCTS:runSimulation()
     local oppositeSide = Side:getOpposite(ourSide)
 
     local expand = true
-
     local visited_states = {}
-
     local winner
-
     local oldState
 
     for moves=1,self.maxMoves do
         local legalMoves = stateCopy:getAllLegalMoves()
+        if #legalMoves == 0 then return end
         -- Select a random legal move to make
         local randomIndex = math.random(1, #legalMoves)
         local randomMove = legalMoves[randomIndex]
 
+        if randomMove == nil then return end
+
         -- Create the state change message
         local randomChangeMSg = protocol.createChangeMsg(randomMove, stateCopy:getBoard())
-        oldState = stateCopy:getBoard():toString()
+        oldState = stateCopy:getBoard():toShortString()
         -- Play that random move AND update the board
         -- TODO update protocol to update all of state and not just board so we know whose turn is it
         local turn = protocol.evaluateStateMsg(randomChangeMSg, stateCopy:getBoard())
-        local currentState = stateCopy:getBoard():toString()
+        local currentState = stateCopy:getBoard():toShortString()
 
         if (currentState == oldState) then
             log.error("STATE NOT UPDATED")
+        else
+            log.debug('state updated', oldState, '\n', currentState)
         end
 
         if not turn.endMove then
@@ -198,6 +200,8 @@ function MCTS:runSimulation()
             break
         end
     end
+
+    log.info('visited states =', #visited_states)
 
     -- Update visit statistics
     for _,v in ipairs(visited_states) do
