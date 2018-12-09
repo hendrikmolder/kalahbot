@@ -213,7 +213,7 @@ function MCTS:evaluateStateUsingHeuristic(state)
     -- Evaluation heuristic taken from:
     -- 1) https://blog.hackerrank.com/mancala/
     -- 2) (TODO create citation) http://jabaier.sitios.ing.uc.cl/iic2622/kalah.pdf
-    local ourSide = state:getOurSide
+    local ourSide = state:getOurSide()
     local oppositeSide = Side:getOpposite(ourSide)
 
     local seedsInOurStore = state:getBoard():getSeedsInStore(ourSide)
