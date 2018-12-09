@@ -68,9 +68,11 @@ function Kalah:getWinner()
 
     if finishedSideSeeds > otherSideSeeds then
         return finishedSide
-    else
+    elseif otherSideSeeds > finishedSideSeeds then
         return otherSide
     end
+
+    return nil
 
 end
 
@@ -213,7 +215,7 @@ end
 
 -- Use this to create a state hash
 function Kalah:toString()
-    return "Side To Move:"..self.sideToMove.."Our Side:"..self.ourSide.."Board:"..self.board:toString()
+    return "Side To Move;"..self.sideToMove..";Our Side:"..self.ourSide..";Board:"..self.board:toString()
 end
 
 return Kalah
