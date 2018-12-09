@@ -50,6 +50,30 @@ function Kalah:setBoard(board)
     self.board = board
 end
 
+-- Given a board state, returns true if there is a winner else false
+function Kalah:getWinner()
+
+    local finishedSide
+
+    if self:holes_empty(self.board, Side.NORTH) then finishedSide = Side.NORTH else finishedSide = Side.SOUTH end
+
+    local otherSide = Side:getOpposite(finishedSide)
+    local otherSideSeeds = self.board:getSeedsInStore(otherSide)
+
+    for hole=1,7 do
+        otherSideSeeds = otherSideSeeds + self.board:getSeeds(otherSide, hole)
+    end
+
+    local finishedSideSeeds = self.board:getSeeds(finishedSide)
+
+    if finishedSideSeeds > otherSideSeeds then
+        return finishedSide
+    else
+        return otherSide
+    end
+
+end
+
 -- Checks whether a given move is legal on a given board.
 -- NB! No moves are actually made.
 
@@ -159,7 +183,7 @@ function Kalah:makeMove(board, move)
 
     local finishedSide
 
-    -- This should check for end of the game, but for some reason finishedSide gets set to 2
+    -- DONE This should check for end of the game, but for some reason finishedSide gets set to 2
     if (self:holesEmpty(board, move:getSide())) then
         finishedSide = move:getSide()
     elseif (self:holesEmpty(board, Side:getOpposite(move:getSide()))) then
@@ -185,6 +209,11 @@ function Kalah:makeMove(board, move)
         log.info('Returning side:', move:getSide())
         return Side:getOpposite(move:getSide())
     end
+end
+
+-- Use this to create a state hash
+function Kalah:toString()
+    return "Side To Move:"..self.sideToMove.."Our Side:"..self.ourSide.."Board:"..self.board:toString()
 end
 
 return Kalah
