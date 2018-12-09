@@ -65,8 +65,7 @@ function protocol.evaluateStartMsg(message)
 end
 
 function protocol.createChangeMsg(move, board)
-    log.info('createChangeMsg called')
-    local boardString = board:getShortString()
+    local boardString = board:toShortString()
     local moveHole = move:getHole()
     local change = 'CHANGE;'
     local turns = {
