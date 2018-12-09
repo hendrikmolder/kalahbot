@@ -60,13 +60,43 @@ function MCTS:getMove()
         self:runSimulation()
         games = games + 1
     end
-    -- [(p, self.board.next_state(state, p)) for p in legal]
-    -- create a list of state action pairs from all possible legal moves
-    -- [[ TODO Lua Equivalent would be a table with the key being the move and the
-    --  Value being the resultant state --]]
 
     --[[
-    -- percent_wins, move = max(
+        (p, self.board.next_state(state, p)) for p in legal
+            create a list of state action pairs from all possible legal moves
+
+        TODO Lua Equivalent would be a table with the key being the move and the
+        Value being the resultant state
+    --]]
+
+    local possibleStates = {}  -- A table where k=[the move HOLE] and v=[the resulting state]
+    local boardCopy = t.deepcopy(self.state:getBoard())
+    local sideToMove = self.state:getSideToMove()
+    local ourSide = self.state:getOurSide()
+    for z=1,#legalMoves do
+
+        local newState = Kalah:new(boardCopy, ourSide, sideToMove)
+
+        -- Create the move message and play it
+        local randomChangeMSg = protocol.createChangeMsg(legalMoves[z], newState:getBoard())
+        local turn = protocol.evaluateStateMsg(randomChangeMSg, newState:getBoard())
+
+        -- Update the side in the state
+        if not turn.endMove then
+            if turn.again then
+                newState:setSideToMove(ourSide)
+            else
+                newState:setSideToMove(ourSide:getOpposite())
+            end
+        end
+
+        -- Add the updated state to the table
+        possibleStates[legalMoves[z]:getHole()] = newState
+    end
+
+
+    --[[
+         percent_wins, move = max(
             (self.wins.get((player, S), 0) /
              self.plays.get((player, S), 1),
              p)
