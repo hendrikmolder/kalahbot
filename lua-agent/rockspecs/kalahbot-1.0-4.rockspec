@@ -24,7 +24,6 @@ build = {
       move = "move.lua",
       protocol = "protocol.lua",
       kalah = "kalah.lua",
-      log = "log.lua",
       side = "side.lua",
       ["spec.board_spec"] = "spec/board_spec.lua",
       ["spec.kalah_spec"] = "spec/kalah_spec.lua",
