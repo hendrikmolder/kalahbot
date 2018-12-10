@@ -46,7 +46,6 @@ function Main:gameLoop()
     math.random()
     --  END of random popping
 
---    local board = Board:new(nil, 7,7)
     local state = Kalah:new()
     local mctsEngine = MCTS:init(5, 20)
 
@@ -62,44 +61,27 @@ function Main:gameLoop()
                 state:setOurSide(Side.NORTH)
 
                 -- Pie Rule - Random swap
---                local pieRuleRandom = math.random(1, 100)
---                if pieRuleRandom % 2 == 0 then -- Send a SWAP message
---                    state:setOurSide(Side.SOUTH)
---                    Main:sendMsg(protocol.createSwapMsg())
---                end
+               local pieRuleRandom = math.random(1, 100)
+               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
+                   state:setOurSide(Side.SOUTH)
+                   Main:sendMsg(protocol.createSwapMsg())
+               end
             end
 
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, state:getBoard())
---            log.debug("AFTER MAKEMOVE", boardState:toString())
             -- We don't really have to worry about moving for the opponent again, because everytime we get a state
             -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
             -- this
             if not turn.endMove then
                 if turn.again then
                     state:setSideToMove(state:getOurSide())
---                    log.info("Side to move is: ", state:getSideToMove())
-                     -- MCTS.playRandomMove(state)
-                     local mctsMove = mctsEngine:getMove(state)
---                    log.info("MCTS Suggested Move", mctsMove)
---                     local possibleMoves = state:getAllLegalMoves()
-----                     log.debug('Possible moves:', possibleMoves)
---                     local randomMove = math.random(1, #possibleMoves)
-----                     log.debug('Rand:', randomMove, 'Size of legal mov:', #possibleMoves)
---                     local selectedMove = possibleMoves[randomMove]
---                     log.debug('Random move:', selectedMove:toString())
-                     if mctsMove == 0 then
-                         Main:sendMsg(protocol.createSwapMsg())
-                     else
-                        Main:sendMsg(protocol.createMoveMsg(mctsMove))
-                     end
+                    local mctsMove = mctsEngine:getMove(state)
+                    Main:sendMsg(protocol.createMoveMsg(mctsMove))
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))
                 end
             end
-
---            log.debug("FINAL BOARD STATE\n" .. boardState:toString())
-
         elseif messageType == "end" then
             log.info('Received END command. Stopping.')
             break
