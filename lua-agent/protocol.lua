@@ -85,7 +85,7 @@ function protocol.createChangeMsg(move, board)
     return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
 end
 
-function protocol.evaluateStateMsg(message, testBoard)
+function protocol.evaluateStateMsg(message, board)
 --    log.info("BOARD RECEIVED", board:toString(), board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
@@ -109,24 +109,24 @@ function protocol.evaluateStateMsg(message, testBoard)
     -- msgparts[3] -- the board
     local boardParts = msgParts[3]:split(",")
 
-    if (2 * (testBoard:getNoOfHoles() + 1) ~= #boardParts) then
-        log.error("Board holes error: expected " .. 2 *testBoard:getNoOfHoles() + 1 .. " but received " .. #boardParts)
+    if (2 * (board:getNoOfHoles() + 1) ~= #boardParts) then
+        log.error("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
         log.info('Board holes received:', boardParts)
         return nil
     end
 
-    for hole=1,testBoard:getNoOfHoles() do
+    for hole=1,board:getNoOfHoles() do
         -- North holes
-        testBoard:setSeeds(Side.NORTH, hole, boardParts[hole])
+        board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
-        testBoard:setSeeds(Side.SOUTH, hole, boardParts[hole + testBoard:getNoOfHoles() + 1])
+        board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
 --        log.debug("Updating board\n", board:toString())
     end
 
     -- North store
-    testBoard:setSeedsInStore(Side.NORTH, boardParts[testBoard:getNoOfHoles()+1])
+    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
     -- South store
-    testBoard:setSeedsInStore(Side.SOUTH, boardParts[2 * testBoard:getNoOfHoles() + 2])
+    board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
 --    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
