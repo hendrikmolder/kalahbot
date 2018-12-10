@@ -210,15 +210,14 @@ function MCTS:runSimulation()
 
     end
 
-
+    local copyVisitedStates = visited_states
     log.info('visited states =', #visited_states)
 
     -- Update visit statistics
-    for k,_ in ipairs(visited_states) do
-        log.info("UPDATE STATS", k)
+    for k,_ in pairs(visited_states) do
         if self.plays[k] == nil then
         else
-            self.plays[k] = self.plays[v] + 1
+            self.plays[k] = self.plays[k] + 1
             local keyParts = k:split(";", 4)
             local sideToMove = tonumber(keyParts[2])
             if winner == sideToMove then
