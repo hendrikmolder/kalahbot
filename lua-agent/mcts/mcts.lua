@@ -207,19 +207,22 @@ function MCTS:runSimulation()
         if winner ~= nil then
             break
         end
+
     end
+
 
     log.info('visited states =', #visited_states)
 
     -- Update visit statistics
-    for _,v in ipairs(visited_states) do
-        if self.plays[v] == nil then
+    for k,_ in ipairs(visited_states) do
+        log.info("UPDATE STATS", k)
+        if self.plays[k] == nil then
         else
-            self.plays[v] = self.plays[v] + 1
-            local keyParts = v:split(";", 4)
+            self.plays[k] = self.plays[v] + 1
+            local keyParts = k:split(";", 4)
             local sideToMove = tonumber(keyParts[2])
             if winner == sideToMove then
-                self.wins[v] = self.wins[v] + 1
+                self.wins[k] = self.wins[k] + 1
             end
         end
     end
