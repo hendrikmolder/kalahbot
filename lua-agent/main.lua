@@ -47,7 +47,7 @@ function Main:gameLoop()
     --  END of random popping
 
     local state = Kalah:new()
-    local mctsEngine = MCTS:init(5, 20)
+    local mctsEngine = MCTS:init(5, 2)
 
     while true do
         local msg = Main:readMsg()
@@ -61,11 +61,11 @@ function Main:gameLoop()
                 state:setOurSide(Side.NORTH)
 
                 -- Pie Rule - Random swap
-               local pieRuleRandom = math.random(1, 100)
-               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
-                   state:setOurSide(Side.SOUTH)
-                   Main:sendMsg(protocol.createSwapMsg())
-               end
+--               local pieRuleRandom = math.random(1, 100)
+--               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
+--                   state:setOurSide(Side.SOUTH)
+--                   Main:sendMsg(protocol.createSwapMsg())
+--               end
             end
 
         elseif messageType == "state" then

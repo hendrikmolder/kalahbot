@@ -143,8 +143,11 @@ end
 -- so that the getMove() function can use it to pick the best move using UCB
 function MCTS:runSimulation(state)
     -- Copy the state to allow for simulations
+    log.info("Since there is time remaining we run another simulation with", state:toString())
+
     local stateCopy = t.deepcopy(state)
-    -- log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
+
+    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
 
     local expand = true
 
@@ -153,6 +156,7 @@ function MCTS:runSimulation(state)
     local winner
 
     for moves=1,self.maxMoves do
+        log.info("STATE COPY BEFORE MODIFICATION", stateCopy:toString())
         local legalMoves = stateCopy:getAllLegalMoves()
         if #legalMoves == 0 then break end
         -- Select a random legal move to make
@@ -160,11 +164,13 @@ function MCTS:runSimulation(state)
         local randomMove = legalMoves[randomIndex]
         if randomMove == nil then return end
         -- Play that random move AND update the board
-        local boardToMoveOn = t.deepcopy(stateCopy:getBoard())
-        local sideToMove = stateCopy:makeMove(boardToMoveOn, randomMove)
-        stateCopy:setSideToMove(sideToMove)
+        -- Modify board
+        -- WHich is never modified
+        local sideToMove = stateCopy:makeMove(stateCopy:getBoard(), randomMove)
 
-        self.states[stateCopy:toString()] = true
+        log.info("STATE COPY AFTER MODIFICATION", stateCopy:toString())
+
+
 
         -- DONE SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
         -- Transposition table of sorts
@@ -174,8 +180,14 @@ function MCTS:runSimulation(state)
             self.wins[stateCopy:toString()] = 0
         end
 
+        self.states[stateCopy:toString()] = true
+
         -- Add to set of visited states (It's a set, trust me)
         visited_states[stateCopy:toString()] = true
+
+        -- All stats have been set/updated, we can now set the
+        -- -- side to move for the new state we are in
+        stateCopy:setSideToMove(sideToMove)
 
         -- Get a winner only if the holes have emptied
         if (stateCopy:holesEmpty(stateCopy:getBoard(), Side.NORTH)
@@ -186,6 +198,7 @@ function MCTS:runSimulation(state)
 
         -- If a winner is found, end simulation to start back prop (?)
         if winner ~= nil then
+            log.info("Breaking out of loop")
             break
         end
 
@@ -195,6 +208,7 @@ function MCTS:runSimulation(state)
     for k,_ in pairs(visited_states) do
         if self.plays[k] == nil then
         else
+            log.info("Running updates")
             self.plays[k] = self.plays[k] + 1
             local keyParts = k:split(";", 4)
             local sideToMove = tonumber(keyParts[2])
