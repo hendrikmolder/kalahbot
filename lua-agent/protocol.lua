@@ -68,27 +68,25 @@ function protocol.evaluateStartMsg(message)
 end
 
 function protocol.createChangeMsg(move, board)
-    log.debug('Doing Move:', move:getHole())
-    local boardCopy = t.deepcopy(board)                 -- Create a copy of the board
-    log.debug('Board before:', boardCopy:toShortString())
-    Kalah:makeMove(boardCopy, move)                     -- Make the move on the boardCopy
-    local boardCopyString = boardCopy:toShortString()   -- Get the short string of boardCopy
-    log.debug('Board  after:', boardCopyString)
+--    log.debug('board', board)
+--    local boardCopy = t.deepcopy(board)                 -- Create a copy of the board
+--    log.debug('Board before:', boardCopy:toShortString())
+--    Kalah:makeMove(boardCopy, move)                     -- Make the move on the boardCopy
+    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
+--    log.debug('Board  after:', boardCopyString)
     local moveHole = move:getHole()
     local change = 'CHANGE;'
-
     local turns = {
         you = ';YOU',
         opp = ';OPP',
         endTurn = ';END'
     }
-
-    log.info('Returning msg: ', change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n')
-    return change .. moveHole .. ';' .. boardCopyString .. turns.opp .. '\n'
+--    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
+    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
 end
 
-function protocol.evaluateStateMsg(message, board)
-    -- log.info("BOARD RECEIVED", board:toString(), board)
+function protocol.evaluateStateMsg(message, testBoard)
+--    log.info("BOARD RECEIVED", board:toString(), board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -111,25 +109,25 @@ function protocol.evaluateStateMsg(message, board)
     -- msgparts[3] -- the board
     local boardParts = msgParts[3]:split(",")
 
-    if (2 * (board:getNoOfHoles() + 1) ~= #boardParts) then
-        log.error("Board holes error: expected " .. 2 *board:getNoOfHoles() + 1 .. " but received " .. #boardParts)
+    if (2 * (testBoard:getNoOfHoles() + 1) ~= #boardParts) then
+        log.error("Board holes error: expected " .. 2 *testBoard:getNoOfHoles() + 1 .. " but received " .. #boardParts)
         log.info('Board holes received:', boardParts)
         return nil
     end
 
-    for hole=1,board:getNoOfHoles() do
+    for hole=1,testBoard:getNoOfHoles() do
         -- North holes
-        board:setSeeds(Side.NORTH, hole, boardParts[hole])
+        testBoard:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
-        board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
-        -- log.debug("Updating board\n", board:toString())
+        testBoard:setSeeds(Side.SOUTH, hole, boardParts[hole + testBoard:getNoOfHoles() + 1])
+--        log.debug("Updating board\n", board:toString())
     end
 
     -- North store
-    board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
+    testBoard:setSeedsInStore(Side.NORTH, boardParts[testBoard:getNoOfHoles()+1])
     -- South store
-    board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
-    -- log.info('Board:\n', board:toString())
+    testBoard:setSeedsInStore(Side.SOUTH, boardParts[2 * testBoard:getNoOfHoles() + 2])
+--    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
@@ -144,6 +142,8 @@ function protocol.evaluateStateMsg(message, board)
         log.error("Illegal value for turn parameter " .. msgParts[4])
         return nil
     end
+
+--    log.debug("Function completed. Returning moveTurn.")
 
     return moveTurn
 end

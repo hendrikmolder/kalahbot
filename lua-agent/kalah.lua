@@ -123,6 +123,8 @@ function Kalah:gameOver(board)
 end
 
 function Kalah:makeMove(board, move)
+    log.info("Board before move made", board:toString())
+    log.info("MOVE", move:toString())
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
     -- Empty the selected cell
     board:setSeeds(move:getSide(), move:getHole(), 0)
@@ -144,13 +146,13 @@ function Kalah:makeMove(board, move)
     end
 
     local sowSide = move:getSide()
-    local sowHole = move:getHole()
+    local sowHole = move:getHole() -- 8 is a store
     -- log.info("Board before seed update\n", board:toShortString())
     for i=extra,1,-1 do
         sowHole = sowHole + 1
         -- luacheck: ignore extra
         extra=i
-        if sowHole == 8 then
+        if sowHole == 9 then
             sowSide = Side:getOpposite(sowSide)
         end
         -- We now add seeds to the store
@@ -159,13 +161,18 @@ function Kalah:makeMove(board, move)
                 -- Lua counts from 1
                 sowHole = 8
                 board:addSeedsToStore(sowSide, 1);
+
+                -- TODO continue loop somhow witout adding seeds below
             else
-                sowSide = Side:getOpposite(sowSide)
+                -- sowSide = Side:getOpposite(sowSide)
                 sowHole = 1
             end
         end
 
-        board:addSeeds(sowSide, sowHole, 1)
+        if (sowHole == 8 and sowSide == move:getSide()) then
+        else
+            board:addSeeds(sowSide, sowHole, 1)
+        end
     end
 
     -- Capture
@@ -178,7 +185,6 @@ function Kalah:makeMove(board, move)
         board:addSeedsToStore(move:getSide(), 1+board:getSeedsOp(move:getSide(), sowHole))
         board:setSeeds(move:getSide(), sowHole, 0)
         board:setSeedsOp(move:getSide(), sowHole, 0)
-        log.info("Board is now\n", board:toShortString())
     end
 
     local finishedSide
@@ -195,7 +201,7 @@ function Kalah:makeMove(board, move)
         local collectingSide = Side:getOpposite(finishedSide)
         for hole=1, board:getNoOfHoles() do
             seeds = seeds + board:getSeeds(collectingSide, hole)
-            board:setSeeds(collectingSide, hole, 8)
+            board:setSeeds(collectingSide, hole, 0)
         end
 
         board:addSeedsToStore(collectingSide, seeds)
@@ -203,7 +209,9 @@ function Kalah:makeMove(board, move)
 
     -- TODO board:notifyObservers()
 
-    if (sowHole == 0) then
+    log.info("Board after move made", board:toString())
+
+    if (sowHole == 8) then
         return move:getSide()
     else
         -- log.info('Returning side:', move:getSide())

@@ -112,7 +112,7 @@ function MCTS:getMove()
 
     local maxWinPercentage = 0
     local bestHole
-    log.info('possibleStates = ', #possibleStates)
+
     for k,v in ipairs(possibleStates) do
         -- Retrieve the number of wins by using the state's string representation to index into
         -- the wins table
@@ -122,12 +122,14 @@ function MCTS:getMove()
         local plays = self.plays[v:toString()] or 1
 
         local winRate = wins/plays
-        log.info('win rate:', winRate)
+
         if (maxWinPercentage < winRate) then
             maxWinPercentage = winRate
             bestHole = k
         end
     end
+
+    log.info("MCTS Says: ", bestHole)
 
     return bestHole
 end
@@ -137,13 +139,18 @@ end
 function MCTS:runSimulation()
     -- Copy the state to allow for simulations
     local stateCopy = t.deepcopy(self.state)
+    local stateString = stateCopy:toString()
+    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
     local ourSide = stateCopy:getOurSide()
     local sideToPlay = stateCopy:getSideToMove()
     local oppositeSide = Side:getOpposite(ourSide)
 
     local expand = true
+
     local visited_states = {}
+
     local winner
+
     local oldState
 
     for moves=1,self.maxMoves do
@@ -155,27 +162,32 @@ function MCTS:runSimulation()
 
         if randomMove == nil then return end
 
-        -- Create the state change message
+        oldState = stateCopy:getBoard():toString()
         local randomChangeMSg = protocol.createChangeMsg(randomMove, stateCopy:getBoard())
-        oldState = stateCopy:getBoard():toShortString()
         -- Play that random move AND update the board
         -- TODO update protocol to update all of state and not just board so we know whose turn is it
-        local turn = protocol.evaluateStateMsg(randomChangeMSg, stateCopy:getBoard())
-        local currentState = stateCopy:getBoard():toShortString()
-
-        if (currentState == oldState) then
-            log.error("STATE NOT UPDATED")
-        else
-            log.debug('state updated', oldState, '\n', currentState)
-        end
-
-        if not turn.endMove then
-            if turn.again then
-                stateCopy:setSideToMove(ourSide)
-            else
-                stateCopy:setSideToMove(oppositeSide)
-            end
-        end
+        local boardToMoveOn = t.deepcopy(stateCopy:getBoard())
+--        log.debug("BEFORE UPDATE", boardToMoveOn:toString())
+--        log.debug("SIDE TO MOVE:", stateCopy:getSideToMove())
+        log.info("MAKING MOVE ON BOARD COPY")
+        local sideToMove = stateCopy:makeMove(boardToMoveOn, randomMove)
+        log.info("ORIGINAL BOARD AFTER MOVE MADE", stateCopy:getBoard():toString())
+        stateCopy:setSideToMove(sideToMove)
+--        log.debug("AFTER UPDATE", boardToMoveOn:toString())
+--        local turn = protocol.evaluateStateMsg(randomChangeMSg, self.state:getBoard())
+--        local currentState = self.state:getBoard():toString()
+--
+----        if (currentState == oldState) then
+----            log.error("STATE NOT UPDATED")
+----        end
+--
+--        if not turn.endMove then
+--            if turn.again then
+--                stateCopy:setSideToMove(ourSide)
+--            else
+--                stateCopy:setSideToMove(oppositeSide)
+--            end
+--        end
 
         self.states[stateCopy:toString()] = true
 
