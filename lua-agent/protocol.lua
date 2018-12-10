@@ -68,10 +68,6 @@ function protocol.evaluateStartMsg(message)
 end
 
 function protocol.createChangeMsg(move, board)
---    log.debug('board', board)
---    local boardCopy = t.deepcopy(board)                 -- Create a copy of the board
---    log.debug('Board before:', boardCopy:toShortString())
---    Kalah:makeMove(boardCopy, move)                     -- Make the move on the boardCopy
     local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
 --    log.debug('Board  after:', boardCopyString)
     local moveHole = move:getHole()
