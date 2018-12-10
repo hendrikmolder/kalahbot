@@ -141,7 +141,6 @@ function MCTS:runSimulation()
     local stateCopy = t.deepcopy(self.state)
     log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
 
-
     local expand = true
 
     local visited_states = {}
