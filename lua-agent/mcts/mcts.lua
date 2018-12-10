@@ -166,25 +166,10 @@ function MCTS:runSimulation()
 --        log.debug("SIDE TO MOVE:", stateCopy:getSideToMove())
         local sideToMove = stateCopy:makeMove(boardToMoveOn, randomMove)
         stateCopy:setSideToMove(sideToMove)
---        log.debug("AFTER UPDATE", boardToMoveOn:toString())
---        local turn = protocol.evaluateStateMsg(randomChangeMSg, self.state:getBoard())
---        local currentState = self.state:getBoard():toString()
---
-----        if (currentState == oldState) then
-----            log.error("STATE NOT UPDATED")
-----        end
---
---        if not turn.endMove then
---            if turn.again then
---                stateCopy:setSideToMove(ourSide)
---            else
---                stateCopy:setSideToMove(oppositeSide)
---            end
---        end
 
         self.states[stateCopy:toString()] = true
 
-        -- TODO SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
+        -- DONE SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
         -- Transposition table of sorts
         if expand and self.plays[stateCopy:toString()] == nil then
             expand = false
