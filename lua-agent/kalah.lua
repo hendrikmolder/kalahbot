@@ -124,8 +124,6 @@ function Kalah:gameOver(board)
 end
 
 function Kalah:makeMove(board, move)
-    log.info("Board before move made", board:toString())
-    log.info("MOVE", move:toString())
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
     -- We shall make up for the lack of a continue
     -- Empty the selected cell
@@ -208,8 +206,6 @@ function Kalah:makeMove(board, move)
     end
 
     -- TODO board:notifyObservers()
-
-    log.info("Board after move made", board:toString())
 
     if (sowHole == 8) then
         return move:getSide()
