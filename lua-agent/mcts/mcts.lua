@@ -25,17 +25,19 @@ MCTS.__index = MCTS
 -- TODO Remove other data structure based MCTS
 
 -- Initialise the search algorithm
-function MCTS:init(state, calculationTime, maxMoves)
-    local o = {}
-    setmetatable(o, self)
-    self.__index    = self
-
-    self.state = state      -- The state to start MCTS from
+function MCTS:init(calculationTime, maxMoves)
+    local self = setmetatable({}, MCTS)
     self.states = {}        -- Table to hold game states and statistics on them
     self.plays = {}         -- Track plays from current state
     self.wins = {}
     self.calculationTime = tonumber(calculationTime) or 30
     self.maxMoves = tonumber(maxMoves) or 50
+    math.randomseed(os.time())
+    math.random()
+    math.random()
+    math.random()
+
+    return self
 end
 
 function MCTS:update(state)
@@ -43,10 +45,10 @@ function MCTS:update(state)
 end
 
 -- This returns the best move from a given state
-function MCTS:getMove()
+function MCTS:getMove(state)
     local calculationStartTime = os.time()
-    local legalMoves = self.state:getAllLegalMoves()
-    local sideToPlay = self.state:getSideToMove()
+    local legalMoves = state:getAllLegalMoves()
+    local sideToPlay = state:getSideToMove()
 
     if (#legalMoves == 0) then
         return                      -- Return if no legal moves available
@@ -57,7 +59,7 @@ function MCTS:getMove()
     local games = 0
 
     while os.time() - calculationStartTime < self.calculationTime do
-        self:runSimulation()
+        self:runSimulation(state)
         games = games + 1
     end
 
@@ -70,9 +72,9 @@ function MCTS:getMove()
     --]]
 
     local possibleStates = {}  -- A table where k=[the move HOLE] and v=[the resulting state]
-    local boardCopy = t.deepcopy(self.state:getBoard())
-    local sideToMove = self.state:getSideToMove()
-    local ourSide = self.state:getOurSide()
+    local boardCopy = t.deepcopy(state:getBoard())
+    local sideToMove = state:getSideToMove()
+    local ourSide = state:getOurSide()
     for z=1,#legalMoves do
 
         local newState = Kalah:new(boardCopy, ourSide, sideToMove)
@@ -113,20 +115,29 @@ function MCTS:getMove()
     local maxWinPercentage = 0
     local bestHole
 
-    for k,v in ipairs(possibleStates) do
+    for k,v in pairs(possibleStates) do
         -- Retrieve the number of wins by using the state's string representation to index into
         -- the wins table
         local wins = self.wins[v:toString()] or 0
+        log.info("STATE WINS", wins)
         -- Retrieve the number of plays by using the staten's string representation to index into
         -- the plays table
         local plays = self.plays[v:toString()] or 1
+        log.info("STATE PLAYS", plays)
 
         local winRate = wins/plays
 
         if (maxWinPercentage < winRate) then
             maxWinPercentage = winRate
             bestHole = k
+            log.info("BEST HOLE SET TO", k)
         end
+
+    end
+
+    if bestHole == nil then
+        local bestMove = math.random(1, #legalMoves)
+        bestHole = legalMoves[bestMove]:getHole()
     end
 
     log.info("MCTS Says: ", bestHole)
@@ -136,9 +147,9 @@ end
 
 -- This does a random playout from a given state to build the game tree
 -- so that the getMove() function can use it to pick the best move using UCB
-function MCTS:runSimulation()
+function MCTS:runSimulation(state)
     -- Copy the state to allow for simulations
-    local stateCopy = t.deepcopy(self.state)
+    local stateCopy = t.deepcopy(state)
     log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
 
     local expand = true
@@ -147,8 +158,6 @@ function MCTS:runSimulation()
 
     local winner
 
-    local oldState
-
     for moves=1,self.maxMoves do
         local legalMoves = stateCopy:getAllLegalMoves()
         if #legalMoves == 0 then break end
@@ -156,14 +165,8 @@ function MCTS:runSimulation()
         local randomIndex = math.random(1, #legalMoves)
         local randomMove = legalMoves[randomIndex]
         if randomMove == nil then return end
-
-        oldState = stateCopy:getBoard():toString()
-        local randomChangeMSg = protocol.createChangeMsg(randomMove, stateCopy:getBoard())
         -- Play that random move AND update the board
-        -- TODO update protocol to update all of state and not just board so we know whose turn is it
         local boardToMoveOn = t.deepcopy(stateCopy:getBoard())
---        log.debug("BEFORE UPDATE", boardToMoveOn:toString())
---        log.debug("SIDE TO MOVE:", stateCopy:getSideToMove())
         local sideToMove = stateCopy:makeMove(boardToMoveOn, randomMove)
         stateCopy:setSideToMove(sideToMove)
 
@@ -193,9 +196,6 @@ function MCTS:runSimulation()
         end
 
     end
-
-    local copyVisitedStates = visited_states
-    log.info('visited states =', #visited_states)
 
     -- Update visit statistics
     for k,_ in pairs(visited_states) do

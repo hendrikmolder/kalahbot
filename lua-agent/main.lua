@@ -48,6 +48,8 @@ function Main:gameLoop()
 
 --    local board = Board:new(nil, 7,7)
     local state = Kalah:new()
+    local mctsEngine = MCTS:init(5, 20)
+
     while true do
         local msg = Main:readMsg()
         local messageType = protocol.getMessageType(msg)
@@ -78,8 +80,7 @@ function Main:gameLoop()
                     state:setSideToMove(state:getOurSide())
 --                    log.info("Side to move is: ", state:getSideToMove())
                      -- MCTS.playRandomMove(state)
-                     MCTS:init(state, 300, 10)
-                     local mctsMove = MCTS:getMove()
+                     local mctsMove = mctsEngine:getMove(state)
 --                    log.info("MCTS Suggested Move", mctsMove)
 --                     local possibleMoves = state:getAllLegalMoves()
 ----                     log.debug('Possible moves:', possibleMoves)
