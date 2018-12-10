@@ -139,11 +139,8 @@ end
 function MCTS:runSimulation()
     -- Copy the state to allow for simulations
     local stateCopy = t.deepcopy(self.state)
-    local stateString = stateCopy:toString()
     log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
-    local ourSide = stateCopy:getOurSide()
-    local sideToPlay = stateCopy:getSideToMove()
-    local oppositeSide = Side:getOpposite(ourSide)
+
 
     local expand = true
 
@@ -155,11 +152,10 @@ function MCTS:runSimulation()
 
     for moves=1,self.maxMoves do
         local legalMoves = stateCopy:getAllLegalMoves()
-        if #legalMoves == 0 then return end
+        if #legalMoves == 0 then break end
         -- Select a random legal move to make
         local randomIndex = math.random(1, #legalMoves)
         local randomMove = legalMoves[randomIndex]
-
         if randomMove == nil then return end
 
         oldState = stateCopy:getBoard():toString()
@@ -169,9 +165,7 @@ function MCTS:runSimulation()
         local boardToMoveOn = t.deepcopy(stateCopy:getBoard())
 --        log.debug("BEFORE UPDATE", boardToMoveOn:toString())
 --        log.debug("SIDE TO MOVE:", stateCopy:getSideToMove())
-        log.info("MAKING MOVE ON BOARD COPY")
         local sideToMove = stateCopy:makeMove(boardToMoveOn, randomMove)
-        log.info("ORIGINAL BOARD AFTER MOVE MADE", stateCopy:getBoard():toString())
         stateCopy:setSideToMove(sideToMove)
 --        log.debug("AFTER UPDATE", boardToMoveOn:toString())
 --        local turn = protocol.evaluateStateMsg(randomChangeMSg, self.state:getBoard())
@@ -191,6 +185,7 @@ function MCTS:runSimulation()
 
         self.states[stateCopy:toString()] = true
 
+        -- TODO SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
         -- Transposition table of sorts
         if expand and self.plays[stateCopy:toString()] == nil then
             expand = false
@@ -204,6 +199,7 @@ function MCTS:runSimulation()
         -- Get a winner only if the holes have emptied
         if (stateCopy:holesEmpty(stateCopy:getBoard(), Side.NORTH)
                 or stateCopy:holesEmpty(stateCopy:getBoard(), Side.SOUTH)) then
+            log.info("Deciding who won")
             winner = stateCopy:getWinner()
         end
 

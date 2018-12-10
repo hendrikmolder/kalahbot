@@ -2,6 +2,7 @@ Board = require 'board'
 Side = require 'side'
 Move = require 'move'
 local pl = require 'pl.pretty'
+
 local log = require 'utils.log'
 
 -- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
@@ -126,6 +127,7 @@ function Kalah:makeMove(board, move)
     log.info("Board before move made", board:toString())
     log.info("MOVE", move:toString())
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
+    -- We shall make up for the lack of a continue
     -- Empty the selected cell
     board:setSeeds(move:getSide(), move:getHole(), 0)
 
@@ -147,8 +149,8 @@ function Kalah:makeMove(board, move)
 
     local sowSide = move:getSide()
     local sowHole = move:getHole() -- 8 is a store
-    -- log.info("Board before seed update\n", board:toShortString())
     for i=extra,1,-1 do
+        local addSeedsToRightHole = true
         sowHole = sowHole + 1
         -- luacheck: ignore extra
         extra=i
@@ -161,22 +163,20 @@ function Kalah:makeMove(board, move)
                 -- Lua counts from 1
                 sowHole = 8
                 board:addSeedsToStore(sowSide, 1);
+                addSeedsToRightHole = false
 
-                -- TODO continue loop somhow witout adding seeds below
+                -- TODO continue loop somehow witout adding seeds below
             else
                 -- sowSide = Side:getOpposite(sowSide)
                 sowHole = 1
             end
         end
 
-        if (sowHole == 8 and sowSide == move:getSide()) then
-        else
-            board:addSeeds(sowSide, sowHole, 1)
-        end
+        if (addSeedsToRightHole) then board:addSeeds(sowSide, sowHole, 1) end
+
     end
 
     -- Capture
-
     if ((sowSide == move:getSide())
             and (sowHole > 0)
             and (board:getSeeds(sowSide, sowHole) == 1)
@@ -214,7 +214,7 @@ function Kalah:makeMove(board, move)
     if (sowHole == 8) then
         return move:getSide()
     else
-        -- log.info('Returning side:', move:getSide())
+--         log.info('Returning side:', move:getSide())
         return Side:getOpposite(move:getSide())
     end
 end

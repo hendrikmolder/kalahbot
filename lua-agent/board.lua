@@ -78,6 +78,9 @@ function Board:addSeeds(side, hole, seeds)
 end
 
 function Board:getSeedsOp(side, hole)
+    -- Because of Lua's weird representation, we have to ensure the store lookup
+    -- doesn't return a nil value
+    if hole == 8 then return 0 end
     if (side == Side.NORTH) then return tonumber(self.board[2][self.holes+1-hole])
     else return tonumber(self.board[1][self.holes+1-hole]) end
 end
