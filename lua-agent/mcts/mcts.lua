@@ -63,15 +63,9 @@ function MCTS:getMove(state)
         games = games + 1
     end
 
-    --[[
-        (p, self.board.next_state(state, p)) for p in legal
-            create a list of state action pairs from all possible legal moves
-
-        DONE Lua Equivalent would be a table with the key being the move and the
-        Value being the resultant state
-    --]]
-
-    local possibleStates = {}  -- A table where k=[the move HOLE] and v=[the resulting state]
+    -- create a list of move-state pairs from all possible legal moves
+    -- A table where k=[the move HOLE] and v=[the resulting state]
+    local possibleStates = {}
     local boardCopy = t.deepcopy(state:getBoard())
     local sideToMove = state:getSideToMove()
     local ourSide = state:getOurSide()
@@ -150,7 +144,7 @@ end
 function MCTS:runSimulation(state)
     -- Copy the state to allow for simulations
     local stateCopy = t.deepcopy(state)
-    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
+    -- log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
 
     local expand = true
 
@@ -211,53 +205,6 @@ function MCTS:runSimulation(state)
     end
 end
 
-function MCTS.mcts()
-    local WIN_SORE = 10
-    local level
-    local opp
-
-    MCTS.findNextMove(board, side)
-
-end
-
-function MCTS.findNextMove(board, state)
-    local rootNode = Node:new(nil, state)
-    local tree = Tree:new(nil, rootNode)
-
-    while (true) do
-        local promisingNode = MCTS.selectPromisingNode(rootNode)
-
-        if (promisingNode:getState():getBoard() == nil) then
-            MCTS.expandNode(promisingNode)
-        end
-
-        local nodeToExplore = promisingNode
-
-        if (#promisingNode:getChildren() > 0) then
-            nodeToExplore = promisingNode:getRandomChild()
-        end
-
-        local playoutResult = MCTS.simulateRandomPlayout(nodeToExplore)
-        MCTS.backPropagation(nodeToExplore, playoutResult)
-    end
-
-    local winnerNode = rootNode:getChildWithMaxScore()
-    tree:setRoot(winnerNode)
-    return winnerNode:getState():getBoard()
-end
-
-function MCTS.selectPromisingNode(rootNode)
-    local node = rootNode
-    while (#node:getChildren() ~= 0) do
-        node = UCT.findBestNodeWithUCT(node)
-    end
-    return node
-end
-
-function MCTS.expandNode(node)
-
-end
-
 function MCTS:evaluateStateUsingHeuristic(state)
     -- Evaluation heuristic taken from:
     -- 1) https://blog.hackerrank.com/mancala/
@@ -278,7 +225,5 @@ function MCTS:evaluateStateUsingHeuristic(state)
 
     return ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
 end
-
-
 
 return MCTS
