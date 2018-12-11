@@ -47,7 +47,7 @@ function Main:gameLoop()
     --  END of random popping
 
     local state = Kalah:new()
-    local mctsEngine = MCTS:init(5, 2)
+    local mctsEngine = MCTS:init(1, 20)
 
     while true do
         local msg = Main:readMsg()
@@ -77,7 +77,8 @@ function Main:gameLoop()
                 if turn.again then
                     state:setSideToMove(state:getOurSide())
                     local mctsMove = mctsEngine:getMove(state)
-                    Main:sendMsg(protocol.createMoveMsg(mctsMove))
+                    local msgToSend = protocol.createMoveMsg(mctsMove)
+                    Main:sendMsg(msgToSend)
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))
                 end

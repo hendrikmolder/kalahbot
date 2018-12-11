@@ -28,8 +28,8 @@ end
 function Board:new(o, holes, seeds)
     --luacheck: ignore o
     local o = o or {}
-    setmetatable(o, self)
-    self.__index = self
+    self = setmetatable(o, self)
+--    self.__index = self
     self.holes = holes or 1
     self.seeds = seeds or 0
     self.board = {}
@@ -46,7 +46,7 @@ function Board:new(o, holes, seeds)
 
     end
 
-    return o
+    return self
 end
 
 -- Method to deep copy board for agent manipulation

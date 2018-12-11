@@ -46,6 +46,7 @@ end
 
 -- This returns the best move from a given state
 function MCTS:getMove(state)
+    log.info("NEW STATE RECEIVED FOR SIMULATION", state:toString())
     local calculationStartTime = os.time()
     local legalMoves = state:getAllLegalMoves()
     local sideToPlay = state:getSideToMove()
@@ -59,6 +60,8 @@ function MCTS:getMove(state)
     local games = 0
 
     while os.time() - calculationStartTime < self.calculationTime do
+        -- Simulation must always run with the same start state
+        log.info("THIS STATE MUST NEVER CHANGE", state:toString())
         self:runSimulation(state)
         games = games + 1
     end
@@ -130,8 +133,8 @@ function MCTS:getMove(state)
     end
 
     if bestHole == nil then
-        local bestMove = math.random(1, #legalMoves)
-        bestHole = legalMoves[bestMove]:getHole()
+        local randomSelectionIndex = math.random(1, #legalMoves)
+        bestHole = legalMoves[randomSelectionIndex]:getHole()
     end
 
     log.info("MCTS Says: ", bestHole)
@@ -147,7 +150,7 @@ function MCTS:runSimulation(state)
 
     local stateCopy = t.deepcopy(state)
 
-    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toString())
+    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toShortString())
 
     local expand = true
 
@@ -185,16 +188,16 @@ function MCTS:runSimulation(state)
         -- Add to set of visited states (It's a set, trust me)
         visited_states[stateCopy:toString()] = true
 
-        -- All stats have been set/updated, we can now set the
-        -- -- side to move for the new state we are in
-        stateCopy:setSideToMove(sideToMove)
-
         -- Get a winner only if the holes have emptied
         if (stateCopy:holesEmpty(stateCopy:getBoard(), Side.NORTH)
                 or stateCopy:holesEmpty(stateCopy:getBoard(), Side.SOUTH)) then
             log.info("Deciding who won")
             winner = stateCopy:getWinner()
         end
+
+        -- All stats have been set/updated, we can now set the
+        -- -- side to move for the new state we are in
+        stateCopy:setSideToMove(sideToMove)
 
         -- If a winner is found, end simulation to start back prop (?)
         if winner ~= nil then
