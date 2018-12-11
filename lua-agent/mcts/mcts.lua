@@ -51,11 +51,13 @@ function MCTS:getMove(state)
     local legalMoves = state:getAllLegalMoves()
     local sideToPlay = state:getSideToMove()
 
-    if (#legalMoves == 0) then
+    if (tablelength(legalMoves) == 0) then
         return                      -- Return if no legal moves available
-    elseif (#legalMoves == 1) then
-        return legalMoves[1]        -- If only one move available, return that
-    end                             -- Else continue with selecting the move
+    elseif (tablelength(legalMoves) == 1) then
+        log.debug('One move  possible!')
+        log.debug('That move is:', legalMoves[1]:toString())
+        return legalMoves[1]:getHole()       -- If only one move available, return that
+    end                                      -- Else continue with selecting the move
 
     local games = 0
 
@@ -241,6 +243,12 @@ function MCTS:evaluateStateUsingHeuristic(state)
     end
 
     return ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
+end
+
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end
 
 return MCTS

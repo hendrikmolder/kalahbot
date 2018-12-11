@@ -47,7 +47,7 @@ function Main:gameLoop()
     --  END of random popping
 
     local state = Kalah:new()
-    local mctsEngine = MCTS:init(1, 20)
+    local mctsEngine = MCTS:init(1.5, 15)
 
     while true do
         local msg = Main:readMsg()
