@@ -47,7 +47,7 @@ function Main:gameLoop()
     --  END of random popping
 
     local state = Kalah:new()
-    local mctsEngine = MCTS:init(1.5, 15)
+    local mctsEngine = MCTS:init(20, 30)
 
     while true do
         local msg = Main:readMsg()
@@ -55,8 +55,8 @@ function Main:gameLoop()
         if messageType == "start" then
             local isFirst = protocol.evaluateStartMsg(msg)
             if (isFirst) then
-                local move = Move:new(nil, state:getSideToMove(), 2) -- TODO FIND MOVE
-                Main:sendMsg(protocol.createMoveMsg(move.hole))
+                local move = mctsEngine:getMove(state)
+                Main:sendMsg(protocol.createMoveMsg(move))
             else
                 state:setOurSide(Side.NORTH)
 
