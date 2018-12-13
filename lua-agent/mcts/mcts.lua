@@ -32,6 +32,7 @@ function MCTS:init(calculationTime, maxMoves)
     self.wins = {}
     self.calculationTime = tonumber(calculationTime) or 30
     self.maxMoves = tonumber(maxMoves) or 50
+    self.c = 0.5
     math.randomseed(os.time())
     math.random()
     math.random()
@@ -61,20 +62,13 @@ function MCTS:getMove(state)
 
     local games = 0
 
-    while os.time() - calculationStartTime < self.calculationTime do
-        -- Simulation must always run with the same start state
-        log.info("THIS STATE MUST NEVER CHANGE", state:toString())
-        self:runSimulation(state)
-        games = games + 1
-    end
-
     -- create a list of move-state pairs from all possible legal moves
     -- A table where k=[the move HOLE] and v=[the resulting state]
     local possibleStates = {}
     local boardCopy = t.deepcopy(state:getBoard())
     local sideToMove = state:getSideToMove()
     local ourSide = state:getOurSide()
-    for z=1,#legalMoves do
+    for z=1,tablelength(legalMoves) do
 
         local newState = Kalah:new(boardCopy, ourSide, sideToMove)
 
@@ -95,6 +89,14 @@ function MCTS:getMove(state)
         possibleStates[legalMoves[z]:getHole()] = newState
     end
 
+    while os.time() - calculationStartTime < self.calculationTime do
+        -- Simulation must always run with the same start state
+        log.info("THIS STATE MUST NEVER CHANGE", state:toString())
+        -- Runs simulation with current state and all reachable states from current state
+        self:runSimulation(state, possibleStates)
+        games = games + 1
+    end
+
     --[[
          percent_wins, move = max(
             (self.wins.get((player, S), 0) /
@@ -111,8 +113,33 @@ function MCTS:getMove(state)
         am not sure we have a way to do that yet
     --]]
 
+    --[[
+    --
+            if all(plays.get((player, S)) for p, S in moves_states):
+                # If we have stats on all of the legal moves here, use them.
+                log_total = log(
+                    sum(plays[(player, S)] for p, S in moves_states))
+                value, move, state = max(
+                    (
+                        (wins[(player, S)] / plays[(player, S)]) +
+                     self.C * sqrt(log_total / plays[(player, S)]),
+
+                     p, S)
+                    for p, S in moves_states
+                )
+
+                to convert this into Lua, we first check if all legal moves have play stats available, if they do,
+                then we calculate the sum of total plays for that state (=sum of plays through its children)
+
+                to calculate the state value, the UCB formula is used, where we retrieve the wins for that player and
+                state, divide it by the number of plays for that player and state, add the exploration factor's product
+                sqrt of the log total over the plays for that player and state
+    -- --]]
+
     local maxWinPercentage = 0
     local bestHole
+
+
 
     for k,v in pairs(possibleStates) do
         -- Retrieve the number of wins by using the state's string representation to index into
@@ -146,7 +173,7 @@ end
 
 -- This does a random playout from a given state to build the game tree
 -- so that the getMove() function can use it to pick the best move using UCB
-function MCTS:runSimulation(state)
+function MCTS:runSimulation(state, possibleStates)
     -- Copy the state to allow for simulations
     log.info("Since there is time remaining we run another simulation with", state:toString())
 
@@ -163,19 +190,55 @@ function MCTS:runSimulation(state)
     for moves=1,self.maxMoves do
         log.info("STATE COPY BEFORE MODIFICATION", stateCopy:toString())
         local legalMoves = stateCopy:getAllLegalMoves()
-        if #legalMoves == 0 then break end
+        if tablelength(legalMoves) == 0 then break end
         -- Select a random legal move to make
-        local randomIndex = math.random(1, #legalMoves)
-        local randomMove = legalMoves[randomIndex]
-        if randomMove == nil then return end
+        local maxUCBScore = 0
+        -- This is selected as per the UCB policy
+        local nextMove
+
+        -- Set condition for all stats being present to 0 initially
+        local statsPresentFor = 0
+        local totalPlays = 0
+
+        -- We count the number of states from the current states that have stats available
+        -- Simultaneously, we also build up the total plays count
+        for _, v in pairs(possibleStates) do
+            if (self.plays[v:toString()] ~= nil) then
+                statsPresentFor = statsPresentFor + 1
+                totalPlays = totalPlays + self.plays[v:toString()]
+            end
+        end
+
+        -- We calculate the log total to use in the UCB formula
+        local logTotal = math.log(totalPlays)
+
+        -- We do our selection using the UCB function now
+        for k,v in pairs(possibleStates) do
+            log.info("STATS PRESENT FOR", statsPresentFor, tablelength(possibleStates))
+            if (statsPresentFor == tablelength(possibleStates)) then
+                local stateWins = self.wins[v:toString()] or 0
+                local statePlays = self.plays[v:toString()] or 1
+                -- Use the UCB formula
+                local ucbScore = (stateWins/statePlays) + self.c * math.sqrt(logTotal/statePlays)
+                log.info("UCB SCORE", ucbScore)
+                if (maxUCBScore < ucbScore) then
+                    maxUCBScore = ucbScore
+                    nextMove = Move:new(nil, stateCopy:getSideToMove(), k)
+                    log.info("UCB Selects", k)
+                end
+            end
+        end
+
+        -- Initially playout will be random since no stats are available
+        if nextMove == nil then
+            local randomIndex = math.random(1, #legalMoves)
+            nextMove = legalMoves[randomIndex]
+        end
+
         -- Play that random move AND update the board
         -- Modify board
         -- WHich is never modified
-        local sideToMove = stateCopy:makeMove(stateCopy:getBoard(), randomMove)
-
-        log.info("STATE COPY AFTER MODIFICATION", stateCopy:toString())
-
-
+        local sideToMove = stateCopy:makeMove(stateCopy:getBoard(), nextMove)
 
         -- DONE SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
         -- Transposition table of sorts
