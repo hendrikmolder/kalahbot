@@ -119,7 +119,7 @@ function MCTS:getMove(state)
         -- the wins table
         local wins = self.wins[v:toString()] or 0
         log.info("STATE WINS", wins)
-        -- Retrieve the number of plays by using the staten's string representation to index into
+        -- Retrieve the number of plays by using the state's string representation to index into
         -- the plays table
         local plays = self.plays[v:toString()] or 1
         log.info("STATE PLAYS", plays)
@@ -195,6 +195,10 @@ function MCTS:runSimulation(state)
                 or stateCopy:holesEmpty(stateCopy:getBoard(), Side.SOUTH)) then
             log.info("Deciding who won")
             winner = stateCopy:getWinner()
+        -- last iteration with no terminal state in sight
+        elseif moves == self.maxMoves then
+            winner = self:evaluateStateUsingHeuristic(stateCopy)
+            log.info("WINNER FOUND USING EARLY TERMINATION HEURISTIC", winner)
         end
 
         -- All stats have been set/updated, we can now set the
@@ -217,6 +221,7 @@ function MCTS:runSimulation(state)
             self.plays[k] = self.plays[k] + 1
             local keyParts = k:split(";", 4)
             local sideToMove = tonumber(keyParts[2])
+            log.info("WINNER IS", winner, "SIDE TO MOVE IS:", sideToMove)
             if winner == sideToMove then
                 self.wins[k] = self.wins[k] + 1
             end
@@ -242,7 +247,11 @@ function MCTS:evaluateStateUsingHeuristic(state)
         oppTotalSeeds = oppTotalSeeds + state:getBoard():getSeeds(ourSide, hole)
     end
 
-    return ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
+    local evaluationResult = ((seedsInOurStore-seedsInOppStore) + (ourTotalSeeds - oppTotalSeeds))
+
+    if (evaluationResult > 0) then
+        return ourSide
+    else return oppositeSide end
 end
 
 function tablelength(T)
