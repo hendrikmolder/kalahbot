@@ -101,7 +101,7 @@ describe('getSeedsOp', function()
 
     it('errors when the hole is > 7', function ()
         print (testBoard:getSeedsOp(Side.NORTH, 8))
-        assert.equals(testBoard:getSeedsOp(Side.NORTH, 8), nil)
+        assert.equals(testBoard:getSeedsOp(Side.NORTH, 8), 0)
     end)
 end)
 

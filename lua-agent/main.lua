@@ -1,5 +1,5 @@
 package.path = "./?.lua;;" .. package.path -- Fix path if needed and *prefer* local modules instead of luarocks
-local pl = require 'pl.pretty'
+--local pl = require 'pl.pretty'
 
 protocol = require 'protocol'
 Board = require 'board'

@@ -1,5 +1,5 @@
 require('pl.stringx').import()
-local t = require 'pl.tablex'
+--local t = require 'pl.tablex'
 
 --local Kalah = require 'kalah'
 local MoveTurn = require 'moveTurn'
@@ -67,19 +67,19 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
-function protocol.createChangeMsg(move, board)
-    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
---    log.debug('Board  after:', boardCopyString)
-    local moveHole = move:getHole()
-    local change = 'CHANGE;'
-    local turns = {
-        you = ';YOU',
-        opp = ';OPP',
-        endTurn = ';END'
-    }
---    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
-    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
-end
+--function protocol.createChangeMsg(move, board)
+--    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
+----    log.debug('Board  after:', boardCopyString)
+--    local moveHole = move:getHole()
+--    local change = 'CHANGE;'
+--    local turns = {
+--        you = ';YOU',
+--        opp = ';OPP',
+--        endTurn = ';END'
+--    }
+----    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
+--    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
+--end
 
 function protocol.evaluateStateMsg(message, board)
 --    log.info("BOARD RECEIVED", board:toString(), board)
