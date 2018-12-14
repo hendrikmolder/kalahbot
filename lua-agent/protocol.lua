@@ -81,9 +81,8 @@ function protocol.createChangeMsg(move, state)
         opp = ';OPP',
         endTurn = ';END'
     }
-    
-    local sideToMove = state:getSideToMove()
 
+    local sideToMove = state:getSideToMove()
     local turn
 
     if (sideToMove == state:getOurSide()) then
