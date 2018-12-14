@@ -1,5 +1,5 @@
 package.path = "./?.lua;;" .. package.path -- Fix path if needed and *prefer* local modules instead of luarocks
-local pl = require 'pl.pretty'
+--local pl = require 'pl.pretty'
 
 protocol = require 'protocol'
 Board = require 'board'
@@ -7,6 +7,8 @@ Move = require 'move'
 Kalah = require 'kalah'
 Side = require 'side'
 log = require 'utils.log'
+MCTS = require 'mcts.mcts'
+--local t = require 'pl.tablex'
 
 Main = {}
 
@@ -36,49 +38,64 @@ end
 
 function Main:gameLoop()
     log.info('Game loop started.')
---    local board = Board:new(nil, 7,7)
+
+    -- Run random seed for random numbers
+    math.randomseed(os.time())
+    math.random()
+    math.random()
+    math.random()
+    --  END of random popping
+
     local state = Kalah:new()
+    local mctsEngine = MCTS:init(0.5, 15)
+
     while true do
         local msg = Main:readMsg()
         local messageType = protocol.getMessageType(msg)
         if messageType == "start" then
             local isFirst = protocol.evaluateStartMsg(msg)
             if (isFirst) then
-                local move = Move:new(nil, state:getSideToMove(), 2) -- TODO FIND MOVE
-                Main:sendMsg(protocol.createMoveMsg(move.hole))
+                local move = mctsEngine:getMove(state)
+                Main:sendMsg(protocol.createMoveMsg(move))
             else
-                state:setOurSide(Side.NORTH)
-            end
+               state:setOurSide(Side.NORTH)
 
-            log.info("Our side is: ", state:getOurSide())
+                -- Pie Rule - Random swap
+               local pieRuleRandom = math.random(1, 100)
+               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
+                   state:setOurSide(Side.SOUTH)
+                   Main:sendMsg(protocol.createSwapMsg())
+               end
+            end
 
         elseif messageType == "state" then
             local turn = protocol.evaluateStateMsg(msg, state:getBoard())
-            log.info("Turn:", pl.write(turn))
-            log.info('State:', pl.write(state))
             -- We don't really have to worry about moving for the opponent again, because everytime we get a state
             -- message, the evaluateStateMsg() function handles it for us, leaving us to only focus on our moves below
             -- this
             if not turn.endMove then
                 if turn.again then
-                    log.info("Side to move is: ", state:getSideToMove())
-                    local makeMove = Move:new(nil, state:getSideToMove(), 4)
-                    if makeMove:getHole() == 1 then
-                        Main:sendMsg(protocol.createSwapMsg())
-                    else
-                        Main:sendMsg(protocol.createMoveMsg(makeMove.hole))
+                    state:setSideToMove(state:getOurSide())
+                    -- On Pie rule
+                    if (turn.move == -1) then
+                        state:setOurSide(Side:getOpposite(state:getOurSide()))
+                        log.info("OUR SIDE IS NOW", state:getOurSide())
+                        log.info("Side to move", state:getSideToMove())
                     end
+
+                    local mctsMove = mctsEngine:getMove(state)
+                    local msgToSend = protocol.createMoveMsg(mctsMove)
+                    Main:sendMsg(msgToSend)
+                else
+                    state:setSideToMove(Side:getOpposite(state:getOurSide()))
                 end
             end
-
-            log.info("Board is now", state:getBoard():toString())
-
         elseif messageType == "end" then
             log.info('Received END command. Stopping.')
             break
         end
     end
-    log.info('gameLoop() stopped.')
+    log.info('Game loop stopped.')
 end
 
 log.info('Bot started.')

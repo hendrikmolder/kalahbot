@@ -23,6 +23,7 @@ build = {
       main = "main.lua",
       move = "move.lua",
       protocol = "protocol.lua",
+      kalah = "kalah.lua",
       side = "side.lua",
       ["spec.board_spec"] = "spec/board_spec.lua",
       ["spec.move_spec"] = "spec/move_spec.lua",

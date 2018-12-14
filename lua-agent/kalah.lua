@@ -1,5 +1,9 @@
 Board = require 'board'
 Side = require 'side'
+Move = require 'move'
+--local pl = require 'pl.pretty'
+--
+--local log = require 'utils.log'
 
 -- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
 
@@ -47,6 +51,31 @@ function Kalah:setBoard(board)
     self.board = board
 end
 
+-- Given a board state, returns true if there is a winner else false
+function Kalah:getWinner()
+    local finishedSide
+
+    if self:holesEmpty(self.board, Side.NORTH) then finishedSide = Side.NORTH else finishedSide = Side.SOUTH end
+
+    local otherSide = Side:getOpposite(finishedSide)
+    local otherSideSeeds = self.board:getSeedsInStore(otherSide)
+
+    for hole=1,7 do
+        otherSideSeeds = otherSideSeeds + self.board:getSeeds(otherSide, hole)
+    end
+
+    local finishedSideSeeds = self.board:getSeedsInStore(finishedSide)
+
+    if finishedSideSeeds > otherSideSeeds then
+        return finishedSide
+    elseif otherSideSeeds > finishedSideSeeds then
+        return otherSide
+    end
+
+    return nil
+
+end
+
 -- Checks whether a given move is legal on a given board.
 -- NB! No moves are actually made.
 
@@ -59,6 +88,23 @@ end
 
 function Kalah:performMove(move)
     return self:makeMove(self:getBoard(), move)
+end
+
+function Kalah:getAllLegalMoves(board)
+    local legalMoves    = {}
+    local useBoard      = board or self.board
+    local noOfHoles     = useBoard:getNoOfHoles()
+    local side          = self.sideToMove
+
+    -- log.debug("Board to search for legal moves", useBoard:toString())
+    for i=1,noOfHoles do
+        if (useBoard:getSeeds(side, i) ~= 0) then
+            local move = Move:new(nil, side, i)
+            table.insert(legalMoves, move)
+        end
+    end
+
+    return legalMoves
 end
 
 -- Checks whether all holes are empty
@@ -79,6 +125,7 @@ end
 
 function Kalah:makeMove(board, move)
     local seedsToSow = board:getSeeds(move:getSide(), move:getHole())
+    -- We shall make up for the lack of a continue
     -- Empty the selected cell
     board:setSeeds(move:getSide(), move:getHole(), 0)
 
@@ -91,22 +138,21 @@ function Kalah:makeMove(board, move)
 
     if (rounds ~= 0) then
         for hole=1,board:getNoOfHoles() do
-            board:addSeeds("NORTH", hole, rounds)
-            board:addSeeds("SOUTH", hole, rounds)
+            board:addSeeds(Side.NORTH, hole, rounds)
+            board:addSeeds(Side.SOUTH, hole, rounds)
         end
 
         board:addSeedsToStore(move:getSide(), rounds);
     end
 
     local sowSide = move:getSide()
-    local sowHole = move:getHole()
+    local sowHole = move:getHole() -- 8 is a store
     for i=extra,1,-1 do
-        log.info("Board before seed update\n", board:toString())
+        local addSeedsToRightHole = true
         sowHole = sowHole + 1
         -- luacheck: ignore extra
         extra=i
-        if sowHole == 8 then
-            -- DONE implment side.lua
+        if sowHole == 9 then
             sowSide = Side:getOpposite(sowSide)
         end
         -- We now add seeds to the store
@@ -115,17 +161,20 @@ function Kalah:makeMove(board, move)
                 -- Lua counts from 1
                 sowHole = 8
                 board:addSeedsToStore(sowSide, 1);
+                addSeedsToRightHole = false
+
+                -- TODO continue loop somehow witout adding seeds below
             else
-                sowSide = Side:getOpposite(sowSide)
+                -- sowSide = Side:getOpposite(sowSide)
                 sowHole = 1
             end
         end
 
-        board:addSeeds(sowSide, sowHole, 1)
+        if (addSeedsToRightHole) then board:addSeeds(sowSide, sowHole, 1) end
+
     end
 
     -- Capture
-
     if ((sowSide == move:getSide())
             and (sowHole > 0)
             and (board:getSeeds(sowSide, sowHole) == 1)
@@ -134,12 +183,11 @@ function Kalah:makeMove(board, move)
         board:addSeedsToStore(move:getSide(), 1+board:getSeedsOp(move:getSide(), sowHole))
         board:setSeeds(move:getSide(), sowHole, 0)
         board:setSeedsOp(move:getSide(), sowHole, 0)
-        log.info("board is now\n", board:toString())
     end
 
     local finishedSide
 
-    -- This should check for end of the game, but for some reason finishedSide gets set to 2
+    -- DONE This should check for end of the game, but for some reason finishedSide gets set to 2
     if (self:holesEmpty(board, move:getSide())) then
         finishedSide = move:getSide()
     elseif (self:holesEmpty(board, Side:getOpposite(move:getSide()))) then
@@ -151,7 +199,7 @@ function Kalah:makeMove(board, move)
         local collectingSide = Side:getOpposite(finishedSide)
         for hole=1, board:getNoOfHoles() do
             seeds = seeds + board:getSeeds(collectingSide, hole)
-            board:setSeeds(collectingSide, hole, 8)
+            board:setSeeds(collectingSide, hole, 0)
         end
 
         board:addSeedsToStore(collectingSide, seeds)
@@ -159,12 +207,17 @@ function Kalah:makeMove(board, move)
 
     -- TODO board:notifyObservers()
 
-    if (sowHole == 0) then
+    if (sowHole == 8) then
         return move:getSide()
     else
-        log.info('Returning side:', move:getSide())
+--         log.info('Returning side:', move:getSide())
         return Side:getOpposite(move:getSide())
     end
+end
+
+-- Use this to create a state hash
+function Kalah:toString()
+    return "Side To Move;"..self.sideToMove..";Our Side:"..self.ourSide..";Board:"..self.board:toString()
 end
 
 return Kalah
