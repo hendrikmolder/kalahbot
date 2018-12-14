@@ -59,13 +59,6 @@ function Main:gameLoop()
                 Main:sendMsg(protocol.createMoveMsg(move))
             else
                 state:setOurSide(Side.NORTH)
-
-                -- Pie Rule - Random swap
---               local pieRuleRandom = math.random(1, 100)
---               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
---                   state:setOurSide(Side.SOUTH)
---                   Main:sendMsg(protocol.createSwapMsg())
---               end
             end
 
         elseif messageType == "state" then
@@ -78,6 +71,12 @@ function Main:gameLoop()
                     state:setSideToMove(state:getOurSide())
                     local mctsMove = mctsEngine:getMove(state)
                     local msgToSend = protocol.createMoveMsg(mctsMove)
+
+                    -- Handle Pie Rule
+                    if (turn.move == -1) then
+                        msgToSend = protocol.createSwapMsg()
+                    end
+
                     Main:sendMsg(msgToSend)
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))
