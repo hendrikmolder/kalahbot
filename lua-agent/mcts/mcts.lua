@@ -62,15 +62,14 @@ function MCTS:getMove(state)
     -- create a list of move-state pairs from all possible legal moves
     -- A table where k=[the move HOLE] and v=[the resulting state]
     local possibleStates = {}
-    local boardCopy = t.deepcopy(state:getBoard())
     local sideToMove = state:getSideToMove()
     local ourSide = state:getOurSide()
     for z=1,tablelength(legalMoves) do
 
-        local newState = Kalah:new(boardCopy, ourSide, sideToMove)
+        local newState = t.deepcopy(state)
 
         -- Create the move message and play it
-        local randomChangeMSg = protocol.createChangeMsg(legalMoves[z], newState:getBoard())
+        local randomChangeMSg = protocol.createChangeMsg(legalMoves[z], newState)
         local turn = protocol.evaluateStateMsg(randomChangeMSg, newState:getBoard())
 
         -- Update the side in the state

@@ -67,8 +67,10 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
-function protocol.createChangeMsg(move, board)
-    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
+-- This function should take state and move to output a message that can be used to
+-- determine the right side to play
+function protocol.createChangeMsg(move, state)
+    local boardCopyString = state:getBoard():toShortString()   -- Get the short string of boardCopy
 --    log.debug('Board  after:', boardCopyString)
     local moveHole = move:getHole()
     local change = 'CHANGE;'
@@ -77,8 +79,21 @@ function protocol.createChangeMsg(move, board)
         opp = ';OPP',
         endTurn = ';END'
     }
+
+    local sideToMove = state:getSideToMove()
+
+    local turn
+
+    if (sideToMove == state:getOurSide()) then
+        turn = turns.you
+    elseif(sideToMove == Side:getOpposite(state:getOurSide())) then
+        turn = turns.opp
+    else
+        turn = turns.endTurn
+    end
+
 --    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
-    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
+    return change .. moveHole .. ';' .. boardCopyString .. turn .. '\n'
 end
 
 function protocol.evaluateStateMsg(message, board)
