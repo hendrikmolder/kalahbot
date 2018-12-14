@@ -67,22 +67,20 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
---function protocol.createChangeMsg(move, board)
---    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
-----    log.debug('Board  after:', boardCopyString)
---    local moveHole = move:getHole()
---    local change = 'CHANGE;'
---    local turns = {
---        you = ';YOU',
---        opp = ';OPP',
---        endTurn = ';END'
---    }
-----    log.info('Returning msg: ', change .. moveHole .. ';' .. boardString .. ';OPP' .. '\n')
---    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
---end
+function protocol.createChangeMsg(move, board)
+    local boardCopyString = board:toShortString()   -- Get the short string of boardCopy
+    local moveHole = move:getHole()
+    local change = 'CHANGE;'
+    --luacheck: ignore turns
+    local turns = {
+        you = ';YOU',
+        opp = ';OPP',
+        endTurn = ';END'
+    }
+    return change .. moveHole .. ';' .. boardCopyString .. ';OPP' .. '\n'
+end
 
 function protocol.evaluateStateMsg(message, board)
---    log.info("BOARD RECEIVED", board:toString(), board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -116,14 +114,12 @@ function protocol.evaluateStateMsg(message, board)
         board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
         board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
---        log.debug("Updating board\n", board:toString())
     end
 
     -- North store
     board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
     -- South store
     board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
---    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
@@ -139,7 +135,6 @@ function protocol.evaluateStateMsg(message, board)
         return nil
     end
 
---    log.debug("Function completed. Returning moveTurn.")
 
     return moveTurn
 end
