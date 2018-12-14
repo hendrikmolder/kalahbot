@@ -67,6 +67,7 @@ function protocol.evaluateStartMsg(message)
     end
 end
 
+
 -- This function should take state and move to output a message that can be used to
 -- determine the right side to play
 function protocol.createChangeMsg(move, state)
@@ -74,12 +75,13 @@ function protocol.createChangeMsg(move, state)
 --    log.debug('Board  after:', boardCopyString)
     local moveHole = move:getHole()
     local change = 'CHANGE;'
+    --luacheck: ignore turns
     local turns = {
         you = ';YOU',
         opp = ';OPP',
         endTurn = ';END'
     }
-
+    
     local sideToMove = state:getSideToMove()
 
     local turn
@@ -97,7 +99,6 @@ function protocol.createChangeMsg(move, state)
 end
 
 function protocol.evaluateStateMsg(message, board)
---    log.info("BOARD RECEIVED", board:toString(), board)
     -- Check if message has a valid ending character
     if message:sub(#message, #message) ~= "\n" then return nil end
 
@@ -131,14 +132,12 @@ function protocol.evaluateStateMsg(message, board)
         board:setSeeds(Side.NORTH, hole, boardParts[hole])
         -- South holes
         board:setSeeds(Side.SOUTH, hole, boardParts[hole + board:getNoOfHoles() + 1])
---        log.debug("Updating board\n", board:toString())
     end
 
     -- North store
     board:setSeedsInStore(Side.NORTH, boardParts[board:getNoOfHoles()+1])
     -- South store
     board:setSeedsInStore(Side.SOUTH, boardParts[2 * board:getNoOfHoles() + 2])
---    log.info('Board:\n', board:toString())
 
     -- msgParts[4] -- who's turn
     moveTurn.endMove = false
@@ -154,7 +153,6 @@ function protocol.evaluateStateMsg(message, board)
         return nil
     end
 
---    log.debug("Function completed. Returning moveTurn.")
 
     return moveTurn
 end
