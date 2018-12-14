@@ -5,7 +5,8 @@ Move.__index = Move
 -- class method new
 function Move:new (o, side, hole)
     if hole < 1 then return nil end
-
+    --luacheck: ignore o
+    --luacheck: ignore self
     o = o or {}
     local self = setmetatable(o, Move)
     self.side       = side or nil
