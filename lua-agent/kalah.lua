@@ -1,9 +1,9 @@
 Board = require 'board'
 Side = require 'side'
 Move = require 'move'
-local pl = require 'pl.pretty'
-
-local log = require 'utils.log'
+--local pl = require 'pl.pretty'
+--
+--local log = require 'utils.log'
 
 -- TODO: @aayush look through the ingored linting errors (CTRL-F "luachedk:")
 

@@ -56,7 +56,7 @@ function Board:copyBoard(obj)
     -- Set the meta table for lookups to be the same as the copied object
     local res = setmetatable({}, getmetatable(obj))
     -- Copy table elements to the agent's copy
-    for k,v in pairs(obj) do res[copyBoard(k)] = copyBoard(v) end
+    for k,v in pairs(obj) do res[self:copyBoard(k)] = self:copyBoard(v) end
     return res
 
 end

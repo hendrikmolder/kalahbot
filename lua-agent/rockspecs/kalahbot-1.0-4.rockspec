@@ -26,7 +26,6 @@ build = {
       kalah = "kalah.lua",
       side = "side.lua",
       ["spec.board_spec"] = "spec/board_spec.lua",
-      ["spec.kalah_spec"] = "spec/kalah_spec.lua",
       ["spec.move_spec"] = "spec/move_spec.lua",
       ["spec.protocol_spec"] = "spec/protocol_spec.lua",
       ["spec.side_spec"] = "spec/side_spec.lua"

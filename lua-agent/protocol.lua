@@ -1,9 +1,9 @@
 require('pl.stringx').import()
 local t = require 'pl.tablex'
 
-local Kalah = require 'kalah'
+--local Kalah = require 'kalah'
 local MoveTurn = require 'moveTurn'
-local Board = require 'board'
+--local Board = require 'board'
 local log = require 'utils.log'
 local Side = require 'side'
 

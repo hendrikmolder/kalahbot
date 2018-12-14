@@ -8,7 +8,7 @@ Kalah = require 'kalah'
 Side = require 'side'
 log = require 'utils.log'
 MCTS = require 'mcts.mcts'
-local t = require 'pl.tablex'
+--local t = require 'pl.tablex'
 
 Main = {}
 
@@ -47,7 +47,7 @@ function Main:gameLoop()
     --  END of random popping
 
     local state = Kalah:new()
-    local mctsEngine = MCTS:init(20, 30)
+    local mctsEngine = MCTS:init(0.5, 15)
 
     while true do
         local msg = Main:readMsg()
@@ -58,7 +58,14 @@ function Main:gameLoop()
                 local move = mctsEngine:getMove(state)
                 Main:sendMsg(protocol.createMoveMsg(move))
             else
-                state:setOurSide(Side.NORTH)
+               state:setOurSide(Side.NORTH)
+
+                -- Pie Rule - Random swap
+               local pieRuleRandom = math.random(1, 100)
+               if pieRuleRandom % 2 == 0 then -- Send a SWAP message
+                   state:setOurSide(Side.SOUTH)
+                   Main:sendMsg(protocol.createSwapMsg())
+               end
             end
 
         elseif messageType == "state" then
@@ -69,14 +76,15 @@ function Main:gameLoop()
             if not turn.endMove then
                 if turn.again then
                     state:setSideToMove(state:getOurSide())
-                    local mctsMove = mctsEngine:getMove(state)
-                    local msgToSend = protocol.createMoveMsg(mctsMove)
-
-                    -- Handle Pie Rule
+                    -- On Pie rule
                     if (turn.move == -1) then
-                        msgToSend = protocol.createSwapMsg()
+                        state:setOurSide(Side:getOpposite(state:getOurSide()))
+                        log.info("OUR SIDE IS NOW", state:getOurSide())
+                        log.info("Side to move", state:getSideToMove())
                     end
 
+                    local mctsMove = mctsEngine:getMove(state)
+                    local msgToSend = protocol.createMoveMsg(mctsMove)
                     Main:sendMsg(msgToSend)
                 else
                     state:setSideToMove(Side:getOpposite(state:getOurSide()))

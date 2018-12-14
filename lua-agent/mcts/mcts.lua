@@ -47,7 +47,6 @@ end
 
 -- This returns the best move from a given state
 function MCTS:getMove(state)
-    log.info("NEW STATE RECEIVED FOR SIMULATION", state:toString())
     local calculationStartTime = os.time()
     local legalMoves = state:getAllLegalMoves()
     local sideToPlay = state:getSideToMove()
@@ -55,8 +54,6 @@ function MCTS:getMove(state)
     if (tablelength(legalMoves) == 0) then
         return                      -- Return if no legal moves available
     elseif (tablelength(legalMoves) == 1) then
-        log.debug('One move  possible!')
-        log.debug('That move is:', legalMoves[1]:toString())
         return legalMoves[1]:getHole()       -- If only one move available, return that
     end                                      -- Else continue with selecting the move
 
@@ -91,7 +88,6 @@ function MCTS:getMove(state)
 
     while os.time() - calculationStartTime < self.calculationTime do
         -- Simulation must always run with the same start state
-        log.info("THIS STATE MUST NEVER CHANGE", state:toString())
         -- Runs simulation with current state and all reachable states from current state
         self:runSimulation(state, possibleStates)
         games = games + 1
@@ -145,18 +141,16 @@ function MCTS:getMove(state)
         -- Retrieve the number of wins by using the state's string representation to index into
         -- the wins table
         local wins = self.wins[v:toString()] or 0
-        log.info("STATE WINS", wins)
         -- Retrieve the number of plays by using the state's string representation to index into
         -- the plays table
         local plays = self.plays[v:toString()] or 1
-        log.info("STATE PLAYS", plays)
 
         local winRate = wins/plays
-
+        log.info("WIN RATE", winRate)
         if (maxWinPercentage < winRate) then
             maxWinPercentage = winRate
+            log.info("MAX WIN PERCENTAGE", maxWinPercentage)
             bestHole = k
-            log.info("BEST HOLE SET TO", k)
         end
 
     end
@@ -166,7 +160,6 @@ function MCTS:getMove(state)
         bestHole = legalMoves[randomSelectionIndex]:getHole()
     end
 
-    log.info("MCTS Says: ", bestHole)
 
     return bestHole
 end
@@ -175,11 +168,7 @@ end
 -- so that the getMove() function can use it to pick the best move using UCB
 function MCTS:runSimulation(state, possibleStates)
     -- Copy the state to allow for simulations
-    log.info("Since there is time remaining we run another simulation with", state:toString())
-
     local stateCopy = t.deepcopy(state)
-
-    log.info("SIMULATION STARTING AT", stateCopy:getBoard():toShortString())
 
     local expand = true
 
@@ -188,7 +177,6 @@ function MCTS:runSimulation(state, possibleStates)
     local winner
 
     for moves=1,self.maxMoves do
-        log.info("STATE COPY BEFORE MODIFICATION", stateCopy:toString())
         local legalMoves = stateCopy:getAllLegalMoves()
         if tablelength(legalMoves) == 0 then break end
         -- Select a random legal move to make
@@ -214,17 +202,15 @@ function MCTS:runSimulation(state, possibleStates)
 
         -- We do our selection using the UCB function now
         for k,v in pairs(possibleStates) do
-            log.info("STATS PRESENT FOR", statsPresentFor, tablelength(possibleStates))
             if (statsPresentFor == tablelength(possibleStates)) then
                 local stateWins = self.wins[v:toString()] or 0
                 local statePlays = self.plays[v:toString()] or 1
                 -- Use the UCB formula
                 local ucbScore = (stateWins/statePlays) + self.c * math.sqrt(logTotal/statePlays)
-                log.info("UCB SCORE", ucbScore)
+                log.info("UCB Score", ucbScore)
                 if (maxUCBScore < ucbScore) then
                     maxUCBScore = ucbScore
                     nextMove = Move:new(nil, stateCopy:getSideToMove(), k)
-                    log.info("UCB Selects", k)
                 end
             end
         end
@@ -237,10 +223,9 @@ function MCTS:runSimulation(state, possibleStates)
 
         -- Play that random move AND update the board
         -- Modify board
-        -- WHich is never modified
+        -- Which is never modified
         local sideToMove = stateCopy:makeMove(stateCopy:getBoard(), nextMove)
 
-        -- DONE SOMETHING IS OFF HERE, IT'S NOT POPULATED AS INTENDED
         -- Transposition table of sorts
         if expand and self.plays[stateCopy:toString()] == nil then
             expand = false
@@ -256,12 +241,11 @@ function MCTS:runSimulation(state, possibleStates)
         -- Get a winner only if the holes have emptied
         if (stateCopy:holesEmpty(stateCopy:getBoard(), Side.NORTH)
                 or stateCopy:holesEmpty(stateCopy:getBoard(), Side.SOUTH)) then
-            log.info("Deciding who won")
             winner = stateCopy:getWinner()
         -- last iteration with no terminal state in sight
         elseif moves == self.maxMoves then
+            log.info("FINDING WINNER USING HEURISTIC")
             winner = self:evaluateStateUsingHeuristic(stateCopy)
-            log.info("WINNER FOUND USING EARLY TERMINATION HEURISTIC", winner)
         end
 
         -- All stats have been set/updated, we can now set the
@@ -270,7 +254,6 @@ function MCTS:runSimulation(state, possibleStates)
 
         -- If a winner is found, end simulation to start back prop (?)
         if winner ~= nil then
-            log.info("Breaking out of loop")
             break
         end
 
@@ -280,11 +263,9 @@ function MCTS:runSimulation(state, possibleStates)
     for k,_ in pairs(visited_states) do
         if self.plays[k] == nil then
         else
-            log.info("Running updates")
             self.plays[k] = self.plays[k] + 1
             local keyParts = k:split(";", 4)
             local sideToMove = tonumber(keyParts[2])
-            log.info("WINNER IS", winner, "SIDE TO MOVE IS:", sideToMove)
             if winner == sideToMove then
                 self.wins[k] = self.wins[k] + 1
             end
